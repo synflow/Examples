@@ -1,0 +1,25 @@
+import Definitions;
+
+/*
+ * Input and output ports
+ */
+port in clipped clip, count_t count, out bool result;
+
+count_t temp;
+
+void init() {
+	// reads from "count" in the second cycle
+	idle(1);
+	temp = count.read();
+}
+
+/**
+ * Compares its two inputs.
+ */
+void main() {
+	clipped v = clip.read();
+	bool comparison = temp == v;
+	print("temp = ", temp, ", clip = ", v, ", result = ", comparison);
+	result.write(comparison);
+	temp = count.read();
+}

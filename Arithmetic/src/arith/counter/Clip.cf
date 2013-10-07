@@ -1,0 +1,12 @@
+import Definitions.{count_t, clipped};
+
+/*
+ * Input and output ports
+ */
+port in count_t I, out clipped O;
+
+@Test(I = { 0, 63, 64, 511 }, O = { 0, 63, 63, 63 })
+void main() {
+	count_t local = I.read();
+	O.write(local > 63 ? 63 : local);
+}

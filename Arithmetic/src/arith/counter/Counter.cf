@@ -1,0 +1,16 @@
+import Definitions.count_t;
+
+/*   
+ * Output port
+ */
+port out count_t count_o;
+
+count_t count;
+
+/**
+ * 9-bit wrap-around counter.
+ */
+void main() {
+	count_o.write(count);
+	count++;
+}

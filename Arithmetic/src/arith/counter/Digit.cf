@@ -1,0 +1,30 @@
+import Definitions.count_t;
+
+/*
+ * Input and output ports
+ */
+port in count_t count, out u15 digits;
+
+/* 
+ * Manages the 15-segments display of the Versa board.
+ */
+void main() {
+	count_t count = count.read;
+	u15 digits;
+	if (count < 100) {
+		digits = 0x01FF;
+	} else if (count < 200) {
+		digits = 0x4FFF;
+	} else if (count < 300) {
+		digits = 0x13DD;
+	} else if (count < 400) {
+		digits = 0x07DD;
+	} else if (count < 500) {
+		digits = 0x4DDD;
+	} else if (count < 511) {
+		digits = 0x25DD;
+	} else {
+		digits = 0x7EAB;
+	}
+	digits.write(digits);
+}

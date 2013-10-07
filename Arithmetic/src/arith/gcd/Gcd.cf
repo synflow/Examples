@@ -1,0 +1,30 @@
+/*
+ * Copyright (c) 2013 Matthieu
+ * All rights reserved.
+ */
+
+/*
+ * Input and output ports
+ */
+port in sync u16 a, sync b, out sync z;
+
+u16 x, y;
+
+/**
+ * Task
+ */
+void main() {
+	x = a.read;
+	y = b.read;
+
+	while (y != 0) {
+		print("x = ", x, ", y = ", y);
+		if (x > y) {
+			x -= y;
+		} else {
+			y -= x;
+		}
+	}
+
+	z.write(x);
+}

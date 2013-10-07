@@ -1,0 +1,7 @@
+/*
+ * Copyright (c) 2013 Synflow SAS
+ * All rights reserved.
+ */
+
+typedef u9 count_t;
+typedef u6 clipped;
