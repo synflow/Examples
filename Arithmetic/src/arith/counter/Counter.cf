@@ -3,14 +3,14 @@ import Definitions.count_t;
 /*   
  * Output port
  */
-port out count_t count_o;
+port out count_t count;
 
-count_t count;
+count_t count_i;
 
 /**
  * 9-bit wrap-around counter.
  */
 void main() {
-	count_o.write(count);
-	count++;
+	count.write(count_i);
+	count_i++;
 }
