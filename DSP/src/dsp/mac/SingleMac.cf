@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2013 Matthieu
+ * All rights reserved.
+ */
+
+/*
+ * Input and output ports
+ */
+port in i16 a, b, c, out i32 result;
+
+/**
+ * Task
+ */
+void main() {
+	result.write(a.read * b.read + c.read);
+}

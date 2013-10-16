@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 2013 Matthieu
+ * All rights reserved.
+ */
+
+/*
+ * Input and output ports
+ */
+port in i32 actual;
+
+/**
+ * Task
+ */
+void init() {
+	idle(2);
+
+	assert(actual.read == 7);
+	print("test passed");
+}
+
+void main() {}

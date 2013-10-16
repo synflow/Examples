@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) 2013 Matthieu
+ * All rights reserved.
+ */
+
+/*
+ * Input and output ports
+ */
+port out i16 a, b, c;
+
+/**
+ * Task
+ */
+void init() {
+	a.write(3);
+	b.write(2);
+	c.write(1);
+}
+
+void main() {}
