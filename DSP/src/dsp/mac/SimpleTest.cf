@@ -13,6 +13,8 @@ port in u8 a, sync b, out u16 c;
  */
 void main() {
 	if (a.read > b.read) {
-		c.write(18);
+		c.write(10);
 	}
 }
+
+// Simple change
