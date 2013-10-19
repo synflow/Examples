@@ -1,0 +1,21 @@
+# Generated from TestSingleMac
+set_global_assignment -name FAMILY "Cyclone IV GX"
+set_global_assignment -name DEVICE AUTO
+set_global_assignment -name TOP_LEVEL_ENTITY TestSingleMac
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 12.0
+set_global_assignment -name PROJECT_CREATION_TIME_DATE "00:42:10 OCTOBER 18, 2013"
+set_global_assignment -name LAST_QUARTUS_VERSION 12.0
+
+# Library
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/com/synflow/lib/Simple_Register.v"
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/com/synflow/fifo/FIFO_Read_Controller.v"
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/com/synflow/fifo/FIFO_Write_Controller.v"
+
+# Tasks and networks
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/dsp/mac/ExpectedMac.v"
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/dsp/mac/SingleMac.v"
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/dsp/mac/SourceMac.v"
+
+set_global_assignment -name VERILOG_FILE "../../verilog-gen/dsp/mac/TestSingleMac.v"
+
+set_global_assignment -name SEARCH_PATH "../../verilog-gen"
