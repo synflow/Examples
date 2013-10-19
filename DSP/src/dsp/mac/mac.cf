@@ -1,0 +1,21 @@
+/*
+ * Copyright (c) 2013 Matthieu
+ * All rights reserved.
+ */
+
+/*
+ * MAC - Multiplier and Accumulator
+ * A 4-bit signed MAC unit with saturation and rounding
+ */
+
+/*
+ * Input and output ports
+ */
+port in i4 a, b, out i4 result;
+
+/**
+ * Task
+ */
+void main() {
+	result.write(a.read * b.read);
+}
