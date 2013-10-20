@@ -5,21 +5,21 @@
 
 /*
  * MAC - Multiplier and Accumulator
- * A 4-bit unsigned MAC unit with saturation and rounding
+ * A 8-bit unsigned MAC unit without saturation and rounding
  */
 
 /*
  * Input and output ports
  */
-port in u4 a, b, out u4 result;
-u4 sum, prod;
+port in u4 a, b, out u8 result;
+u8 sum, prod;
 
 /**
  * Task
  */
 void main() {
 	prod = (a.read * b.read);
-	fence;
+	//fence;
 	sum = sum + prod;
 	result.write(sum);
 }
