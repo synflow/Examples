@@ -20,6 +20,6 @@ u8 sum, prod;
 void main() {
 	prod = (a.read * b.read);
 	//fence;
-	sum = sum + prod;
+	sum = (sum + prod > 255) ? 255 : (sum+prod);	// Saturation of sum, to avoid overflow
 	result.write(sum);
 }
