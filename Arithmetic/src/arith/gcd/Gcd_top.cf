@@ -28,25 +28,26 @@ package arith.gcd;
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-task Gcd {
-	port in sync u16 a, sync b, out sync z;
 
-	u16 x, y;
+network NewNetwork {
+	GcdSource = new task {
+		port out sync u16 x, sync y;
 
-	void run() {
-		x = a.read;
-		y = b.read;
-
-		while (y != 0) {
-			print("x = ", x, ", y = ", y);
-			if (x > y) {
-				x -= y;
-			} else {
-				y -= x;
-			}
+		void init() {
+			x.write(64);
+			y.write(48);
 		}
 
-		z.write(x);
-	}
+		void run() {
+		}
+	};
 
+	GcdExpected = new task {
+		void run() {
+			assert(Gcd.z.read == 16);
+		}
+	};
+
+	Gcd = new arith.gcd.Gcd();
+	Gcd.reads(GcdSource.x, GcdSource.y);
 }
