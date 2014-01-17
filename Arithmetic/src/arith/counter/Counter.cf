@@ -35,7 +35,7 @@ task Counter {
 
 	count_t count_i;
 
-	/**
+/**
  * 9-bit wrap-around counter.
  */
 	void run() {

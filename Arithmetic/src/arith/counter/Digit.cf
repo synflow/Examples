@@ -33,7 +33,7 @@ import arith.coounter.Definitions.*;
 task Digit {
 	port in count_t count, out u15 digits;
 
-	/* 
+/* 
  * Manages the 15-segments display of the Versa board.
  */
 	void run() {
