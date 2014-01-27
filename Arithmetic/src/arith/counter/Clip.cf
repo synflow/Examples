@@ -41,7 +41,7 @@ task Clip {
 	@Test(I = { 0, 63, 64, 511 }, O = { 0, 63, 63, 63 })
 	void run() {
 		count_t local = I.read();
-		O.write(local > 63 ? 63 : local);
+		O.write(local > 63 ? 63 : (clipped) local);
 	}
 
 }
