@@ -28,12 +28,12 @@
  */
 package arith.counter;
 
-import arith.coounter.Definitions.*;
+import arith.counter.Definitions.*;
 
 network TopCounter {
 	port out bool OutData, u15 digits;
 
-	Counter = new task {
+	counter = new task {
 		port out count_t count;
 
 		count_t count_i;
@@ -45,20 +45,20 @@ network TopCounter {
 
 	};
 
-	Clip = new task {
+	clip = new task {
 
 		port out clipped O;
 
 		void run() {
-			count_t local = Counter.count.read();
+			count_t local = counter.count.read();
 			O.write(local > 63 ? 63 : local);
 		}
 
 	};
 
-	Digit = new task {
+	digit = new task {
 		void run() { // Manages the 15-segments display of the Versa board.
-			count_t count = Counter.count.read;
+			count_t count = counter.count.read;
 			u15 digits;
 			if (count < 100) {
 				digits = 0x01FF;
@@ -79,9 +79,7 @@ network TopCounter {
 		}
 	};
 
-	Compare = new arith.coounter.Compare;
-	Compare.reads(Clip.O, Counter.count);
-	Compare.writes(OutData);
+	compare = new arith.counter.Compare;
+	compare.reads(clip.O, counter.count);
+	compare.writes(OutData);
 }
-
-

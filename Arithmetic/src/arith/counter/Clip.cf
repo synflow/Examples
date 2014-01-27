@@ -1,4 +1,4 @@
-package arith.coounter;
+package arith.counter;
 
 /*
  * Copyright (c) 2012 - 2013, Matthieu Wipliez - Synflow SAS
@@ -29,7 +29,7 @@ package arith.coounter;
  * SUCH DAMAGE.
  */
  
-import arith.coounter.Definitions.*;
+import arith.counter.Definitions.*;
 
 task Clip {
 
