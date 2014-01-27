@@ -41,8 +41,13 @@ network MacTest {
 	
 	source = new task {
 		void init() {
-			mac.a.write(1);
-			mac.b.write(2);
+			mac.a.write(5); // 5/8 == 0.625
+			mac.b.write(6); // 6/8 == 0.75
+			// expect 30/64 == 0,46875 ~= 4/8 (3.1% error)
+
+			mac.a.write(1); // 1/8 = 0.125
+			mac.b.write(6); // 6/8 = 0.75
+			// expect 6/64 == 0,09375 ~= 1/8 (3.1% error)
 		}
 	};
 
