@@ -32,13 +32,17 @@ package arith.counter;
 import arith.counter.Definitions.*;
 
 task Clip {
+	properties {
+		test: {
+			I: [0, 63, 64, 511], O: [0, 63, 63, 63]
+		}
+	}
 
 /*
  * Input and output ports
  */
 	port in count_t I, out clipped O;
 
-	@Test(I = { 0, 63, 64, 511 }, O = { 0, 63, 63, 63 })
 	void run() {
 		count_t local = I.read();
 		O.write(local > 63 ? 63 : (clipped) local);

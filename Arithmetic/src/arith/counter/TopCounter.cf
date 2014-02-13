@@ -51,7 +51,7 @@ network TopCounter {
 
 		void run() {
 			count_t local = counter.count.read();
-			O.write(local > 63 ? 63 : local);
+			O.write(local > 63 ? 63 : (u6) local);
 		}
 
 	};
