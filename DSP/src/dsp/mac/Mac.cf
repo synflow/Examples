@@ -44,7 +44,7 @@ task Mac {
 	/**
 	 * Clips the given input number from [-8, 7] to [-7, 7]
 	 */
-	i4 clipNegative(i4 num) {
+	const i4 clipNegative(i4 num) {
 		return (num == -8) ? -7 : num;
 	}
 
