@@ -1,7 +1,5 @@
-package arith.gcd;
-
 /*
- * Copyright (c) 2012 - 2013, Matthieu Wipliez - Synflow SAS
+ * Copyright (c) 2013-2014, Synflow SAS
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,8 +26,15 @@ package arith.gcd;
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+package arith.gcd;
+
+/**
+ * This task describes a simple implementation of GCD.
+ * 
+ * @author Matthieu Wipliez
+ */
 task Gcd {
-	port in sync u16 a, sync b, out sync z;
+	in sync u16 a, sync b; out sync u16 z;
 
 	u16 x, y;
 

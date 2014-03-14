@@ -1,7 +1,5 @@
-package arith.counter;
-
 /*
- * Copyright (c) 2012 - 2013, Matthieu Wipliez - Synflow SAS
+ * Copyright (c) 2013-2014, Synflow SAS
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -28,14 +26,16 @@ package arith.counter;
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-import arith.counter.Definitions.*;
+package arith.counter;
 
-task Digit {
-	port in count_t count, out u15 digits;
+import arith.counter.Definitions.*;
 
 /* 
  * Manages the 15-segments display of the Versa board.
  */
+task Digit {
+	in count_t count; out u15 digits;
+
 	void run() {
 		count_t count = count.read;
 		u15 digits;

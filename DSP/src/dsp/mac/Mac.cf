@@ -3,8 +3,6 @@
  * Copyright (c) 2013, Shashank Bangalore Lakshman
  * All rights reserved.
  * 
- * Contributors: Shashank Bangalore Lakshman, Matthieu Wipliez
- * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  * 
@@ -31,13 +29,16 @@
  */
 package dsp.mac;
 
-/*
+/**
  * MAC - Multiplier and Accumulator
  * A 4-bit signed fraction [s.xxx] MAC unit with rounding
+ * 
+ * @author Shashank Bangalore Lakshman
+ * @author Matthieu Wipliez
  */
 task Mac {
 
-	port in i4 a, b, out i4 result;
+	in i4 a, b; out i4 result;
 
 	i4 sum;
 
