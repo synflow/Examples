@@ -8,3 +8,5 @@
 /vhdl-gen
 /projects
 /src/arith/test
+/src/arith/counter/TopCounter.cf
+/testbench
