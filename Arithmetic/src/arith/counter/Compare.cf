@@ -31,7 +31,11 @@ package arith.counter;
 import arith.counter.Definitions.*;
 
 /**
- * Compares its two inputs.
+ * This task compares the data on its two inputs.
+ * 
+ * @author Nicolas Siret <nicolas.siret@synflow.com>
+ * @author Matthieu Wipliez <matthieu.wipliez@synflow.com>
+ * 
  */
 task Compare {
 	in clipped clip, count_t count; out bool result;

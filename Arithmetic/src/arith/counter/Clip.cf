@@ -30,6 +30,13 @@ package arith.counter;
 
 import arith.counter.Definitions.*;
 
+/**
+ * This task clips the input data when > 63.
+ * 
+ * @author Nicolas Siret <nicolas.siret@synflow.com>
+ * @author Matthieu Wipliez <matthieu.wipliez@synflow.com>
+ * 
+ */
 task Clip {
 	properties {
 		test: {
