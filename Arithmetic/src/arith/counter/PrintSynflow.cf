@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2014 Matthieu
+ * All rights reserved.
+ */
+package arith.counter;
+
+task PrintSynflow {
+	out u15 digit;
+	
+	const u15 leds[8] = {
+		//     abc_defg_hjkl_mnp(DP)
+		// S = a c_d f _  k _  p 
+		0b101_1010_0010_0010,
+		// Y =    _   g_ j  _m   
+		0b000_0001_0100_1000,
+		// N =  bc_ efg_   l_    
+		0b011_0111_0001_0000,
+		// F = a  _ ef _  k _  p 
+		0b100_0110_0010_0010,
+		// L =    _def _    _    
+		0b000_1110_0000_0000,
+		// O = abc_def _    _    
+		0b111_1110_0000_0000,
+		// W =  bc_ ef _   l_ n  
+		0b011_0110_0001_0100,
+		// nothing
+		0
+	};
+	
+	u3 i;
+
+	void run() {
+		digit.write(~leds[i]);
+		i++;
+	}
+}
