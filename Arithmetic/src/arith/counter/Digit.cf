@@ -41,7 +41,7 @@ import arith.counter.Definitions.*;
 task Digit {
 	in count_t count; out u15 digits;
 
-	void run() {
+	void loop() {
 		count_t count = count.read;
 		u15 digits;
 		if (count < 100) {

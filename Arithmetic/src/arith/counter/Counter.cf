@@ -42,7 +42,7 @@ task Counter {
 
 	count_t count_i;
 
-	void run() {
+	void loop() {
 		count.write(count_i);
 		count_i++;
 	}

@@ -38,7 +38,7 @@ task Gcd {
 
 	u16 x, y;
 
-	void run() {
+	void loop() {
 		x = a.read;
 		y = b.read;
 

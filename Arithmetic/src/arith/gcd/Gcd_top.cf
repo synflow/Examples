@@ -32,14 +32,14 @@ network NewNetwork {
 	GcdSource = new task {
 		out sync u16 x, sync y;
 
-		void init() {
+		void setup() {
 			x.write(64);
 			y.write(48);
 		}
 	};
 
 	GcdExpected = new task {
-		void run() {
+		void loop() {
 			assert(Gcd.z.read == 16);
 		}
 	};

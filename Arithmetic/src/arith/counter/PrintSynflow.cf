@@ -7,7 +7,7 @@ package arith.counter;
 task PrintSynflow {
 	out u15 digit;
 	
-	const u15 leds[8] = {
+	const u15 leds[8] = [
 		//     abc_defg_hjkl_mnp(DP)
 		// S = a c_d f _  k _  p 
 		0b101_1010_0010_0010,
@@ -25,11 +25,11 @@ task PrintSynflow {
 		0b011_0110_0001_0100,
 		// nothing
 		0
-	};
+	];
 	
 	u3 i;
 
-	void run() {
+	void loop() {
 		digit.write(~leds[i]);
 		i++;
 	}

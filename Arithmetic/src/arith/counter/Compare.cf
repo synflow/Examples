@@ -43,12 +43,12 @@ task Compare {
 	count_t temp;
 
 	// reads from "count" in the second cycle
-	void init() {
+	void setup() {
 		idle(1);
 		temp = count.read();
 	}
 
-	void run() {
+	void loop() {
 		clipped v = clip.read();
 		bool comparison = temp == v;
 		print("temp = ", temp, ", clip = ", v, ", result = ", comparison);

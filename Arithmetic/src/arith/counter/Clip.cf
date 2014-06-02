@@ -46,7 +46,7 @@ task Clip {
 
 	in count_t I; out clipped O;
 
-	void run() {
+	void loop() {
 		count_t local = I.read();
 		O.write(local > 63 ? 63 : (clipped) local);
 	}

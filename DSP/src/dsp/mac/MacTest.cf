@@ -40,7 +40,7 @@ import dsp.mac.Mac;
 network MacTest {
 	
 	source = new task {
-		void init() {
+		void setup() {
 			mac.a.write(5); // 5/8 == 0.625
 			mac.b.write(6); // 6/8 == 0.75
 			// expect 30/64 == 0,46875 ~= 4/8 (3.1% error)
@@ -54,7 +54,7 @@ network MacTest {
 	mac = new Mac();
 
 	expected = new task {
-		void init() {
+		void setup() {
 			print("result = ", mac.result.read());
 		}
 	};

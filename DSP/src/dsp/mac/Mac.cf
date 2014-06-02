@@ -49,7 +49,7 @@ task Mac {
 		return (num == -8) ? -7 : num;
 	}
 
-	void run() {
+	void loop() {
 		i8 prod = clipNegative(a.read) * clipNegative(b.read);
 
 		i4 prodRnd = (i4) (prod >> 3); //Rounding, truncation
