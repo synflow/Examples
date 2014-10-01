@@ -44,11 +44,11 @@ task Clip {
 		}
 	}
 
-	in count_t I; out clipped O;
+	in count_t i; out clipped o;
 
 	void loop() {
-		count_t local = I.read();
-		O.write(local > 63 ? 63 : (clipped) local);
+		count_t local = i.read();
+		o.write(local > 63 ? 63 : (clipped) local);
 	}
 
 }

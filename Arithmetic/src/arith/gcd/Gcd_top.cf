@@ -28,8 +28,8 @@
  */
 package arith.gcd;
 
-network NewNetwork {
-	GcdSource = new task {
+network Gcd_top {
+	gcdSource = new task {
 		out sync u16 x, sync y;
 
 		void setup() {
@@ -38,12 +38,12 @@ network NewNetwork {
 		}
 	};
 
-	GcdExpected = new task {
+	gcdExpected = new task {
 		void loop() {
-			assert(Gcd.z.read == 16);
+			assert(gcd.z.read == 16);
 		}
 	};
 
-	Gcd = new arith.gcd.Gcd();
-	Gcd.reads(GcdSource.x, GcdSource.y);
+	gcd = new arith.gcd.Gcd();
+	gcd.reads(gcdSource.x, gcdSource.y);
 }
