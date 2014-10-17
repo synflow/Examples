@@ -1,8 +1,5 @@
 /.ir
-/bin
-/java-gen
 /sim
-/src-gen
 /verilog-gen
 /vhdl-gen
 /projects
