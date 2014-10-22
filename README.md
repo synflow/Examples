@@ -1,4 +1,4 @@
 examples
 ========
 
-Examples of simple designs made with Synflow Studio
+This project contains simple examples of designs written with the Cx programming language.
