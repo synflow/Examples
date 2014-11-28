@@ -39,7 +39,7 @@ network Gcd_top {
 	};
 
 	gcdExpected = new task {
-		void loop() {
+		void setup() {
 			assert(gcd.z.read == 16);
 		}
 	};
