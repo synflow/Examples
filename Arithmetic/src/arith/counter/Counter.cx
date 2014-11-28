@@ -28,8 +28,6 @@
  */
 package arith.counter;
 
-import arith.counter.Definitions.*;
-
 /**
  * This task is 9-bit wrap-around counter.
  * 
@@ -38,6 +36,8 @@ import arith.counter.Definitions.*;
  * 
  */
 task Counter {
+	import arith.counter.Definitions.*;
+
 	out count_t count;
 
 	count_t count_i;

@@ -28,8 +28,6 @@
  */
 package arith.counter;
 
-import arith.counter.Definitions.*;
-
 /**
  * This task clips the input data when > 63.
  * 
@@ -38,17 +36,19 @@ import arith.counter.Definitions.*;
  * 
  */
 task Clip {
+	import arith.counter.Definitions.*;
+
 	properties {
 		test: {
-			I: [0, 63, 64, 511], O: [0, 63, 63, 63]
+			din: [0, 63, 64, 511], dout: [0, 63, 63, 63]
 		}
 	}
 
-	in count_t i; out clipped o;
+	in count_t din; out clipped dout;
 
 	void loop() {
-		count_t local = i.read();
-		o.write(local > 63 ? 63 : (clipped) local);
+		count_t local = din.read();
+		dout.write(local > 63 ? 63 : (clipped) local);
 	}
 
 }

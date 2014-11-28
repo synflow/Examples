@@ -28,8 +28,6 @@
  */
 package arith.counter;
 
-import arith.counter.Definitions.*;
-
 /**
  * This task compares the data on its two inputs.
  * 
@@ -38,6 +36,8 @@ import arith.counter.Definitions.*;
  * 
  */
 task Compare {
+	import arith.counter.Definitions.*;
+
 	in clipped clip, count_t count; out bool result;
 
 	count_t temp;

@@ -28,8 +28,6 @@
  */
 package arith.counter;
 
-import arith.counter.Definitions.*;
-
 
 /**
  * This task manages the 15-segments display of the Versa board.
@@ -39,6 +37,8 @@ import arith.counter.Definitions.*;
  * 
  */
 task Digit {
+	import arith.counter.Definitions.*;
+
 	in count_t count; out u15 digits;
 
 	void loop() {
