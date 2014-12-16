@@ -29,23 +29,16 @@
 package arith.counter;
 
 network TopCounter {
-	import arith.counter.Counter;
-	import arith.counter.Clip;
-	import arith.counter.Compare;
+  import arith.counter.Counter;
+  import arith.counter.Clip;
+  import arith.counter.Compare;
 
-	counter = new Counter();
-	clip = new Clip();
-	clip.reads(counter.count);
+  // Instantiations
+  counter = new Counter();
+  clip = new Clip();
+  clip.reads(counter.count);
 
-	compare = new Compare();
-	compare.reads(clip.dout);
-	compare.reads(counter.count);
-
-	res = new task {
-		void setup() {
-			for (int i = 0; i < 100; i++) {
-				compare.result.read();
-			}
-		}
-	};
+  compare = new Compare();
+  compare.reads(clip.dout);
+  compare.reads(counter.count);
 }
