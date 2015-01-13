@@ -18,7 +18,6 @@
 	</buildSpec>
 	<natures>
 		<nature>com.synflow.core.nature</nature>
-		<nature>net.sf.orcc.core.nature</nature>
 		<nature>org.eclipse.xtext.ui.shared.xtextNature</nature>
 	</natures>
 </projectDescription>
