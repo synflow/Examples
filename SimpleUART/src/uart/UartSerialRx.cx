@@ -5,7 +5,7 @@
 package uart;
 
 task UartSerialRx {
-	sync { in bool receive; out u8 data_o; }
+	sync { in bool bit; out u8 dout; }
 
 	u8 data;
 	u4 count;
@@ -14,22 +14,22 @@ task UartSerialRx {
 	const u2 n_stop_bits = 2;
 
 	void loop() {
-		if (!receive.read()) {
+		if (!bit.read()) {
 			while (count != 8) {
 				data >>= 1;
-				data[7] = receive.read();
+				data[7] = bit.read();
 				count++;
 			}
 
 			while (count_stop_bits != n_stop_bits) {
-				if (receive.available()) {
+				if (bit.available()) {
 					count_stop_bits++;
 				}
 			}
 
 			count = 0;
 			count_stop_bits = 0;
-			data_o.write(data);
+			dout.write(data);
 		}
 	}
 
