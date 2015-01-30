@@ -1,0 +1,50 @@
+/*
+ * Copyright (c) 2015 Matthieu
+ * All rights reserved.
+ */
+package sobel;
+
+network SobelFilter {
+	import support.BufferConstants.*;
+	import support.LineBuffer;
+	import sobel.SobelKernel;
+
+	in sync pix_t pixels; out pix_t res;
+
+	buffer = new LineBuffer();
+	buffer.reads(pixels);
+
+	shift_reg0 = new ShiftRow();
+	shift_reg0.reads(buffer.p0);
+
+	shift_reg1 = new ShiftRow();
+	shift_reg1.reads(buffer.p1);
+
+	shift_reg2 = new ShiftRow();
+	shift_reg2.reads(buffer.p2);
+
+	kernel = new SobelKernel();
+	kernel.reads(
+		shift_reg0.px0, shift_reg0.px1, shift_reg0.px2,
+		shift_reg1.px0, shift_reg1.px1, shift_reg1.px2,
+		shift_reg2.px0, shift_reg2.px1, shift_reg2.px2
+	);
+	kernel.writes(res);
+
+}
+
+task ShiftRow {
+	import support.BufferConstants.*;
+
+	in pix_t pixels; out pix_t px0, px1, px2;
+	pix_t pix0, pix1, pix2;
+
+	void loop() {
+		px0.write(pix0);
+		px1.write(pix1);
+		px2.write(pix2);
+		pix2 = pix1;
+		pix1 = pix0;
+		pix0 = pixels.read();
+	}
+}

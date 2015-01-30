@@ -1,0 +1,28 @@
+/*
+ * Copyright (c) 2015 Matthieu
+ * All rights reserved.
+ */
+package sobel;
+
+network SobelFilterTest {
+	import sobel.SobelFilter;
+
+	sobel = new SobelFilter();
+
+	source = new task {
+		void setup() {
+			idle(3);
+			for (int i = 0; i < 64; i++) {
+				sobel.pixels.write((u8) i);
+			}
+		}
+	};
+
+	expected = new task {
+		void setup() {
+			sobel.res.read();
+			idle(80);
+		}
+	};
+
+}
