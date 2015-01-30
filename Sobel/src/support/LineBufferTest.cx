@@ -1,0 +1,32 @@
+/*
+ * Copyright (c) 2015 Matthieu
+ * All rights reserved.
+ */
+package support;
+
+network LineBufferTest {
+	import support.LineBuffer;
+
+	// instantiate entities
+	buf = new LineBuffer();
+	
+	source = new task {
+		void setup() {
+			idle(3);
+			for (int i = 0; i < 64; i++) {
+				buf.pixels.write((u8) i);
+			}
+		}
+	};
+	
+	expected = new task {
+		void setup() {
+			for (int i = 0; i < 64; i++) {
+				print('p0 = ', buf.p0.read());
+				print('p1 = ', buf.p1.read());
+				print('p2 = ', buf.p2.read());
+			}
+		}
+	};
+
+}

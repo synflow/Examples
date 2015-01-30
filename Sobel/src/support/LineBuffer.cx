@@ -1,0 +1,59 @@
+/*
+ * Copyright (c) 2015 Matthieu
+ * All rights reserved.
+ */
+package support;
+
+network LineBuffer {
+	import support.BufferConstants.*;
+
+	in sync pix_t pixels;
+	out pix_t p0, p1, p2;
+
+	line1 = new std.mem.SinglePortRAM({ depth: LINE_WIDTH, width: PIXEL_SIZE, writeShiftMode: true });
+	line2 = new std.mem.SinglePortRAM({ depth: LINE_WIDTH, width: PIXEL_SIZE, writeShiftMode: true });
+
+	line1.reads(addressGenerator.address, pixels);
+
+	forward_pixels = new task {
+		pix_t temp;
+		void setup() {
+			temp = pixels.read();
+		}
+		void loop() {
+			p0.write(temp);
+			temp = pixels.read();
+		}
+	};
+
+	delay_p1 = new task {
+		void loop() {
+			p1.write(line1.q.read());
+		}
+	};
+
+	feed_line2 = new task {
+		properties { type: 'combinational' }
+		void loop() {
+			line2.data.write(line1.q.read());
+		}
+	};
+
+	addressGenerator = new task {
+		out col_t address;
+
+		uint<LINE_WIDTH + 1> col;
+	
+		void loop() {
+			address.write((col_t) col);
+			if (col == NUM_PIXELS_PER_LINE - 1) {
+				col = 0;
+			} else {
+				col++;
+			}
+		}
+	};
+	line2.reads(addressGenerator.address);
+	line2.writes(p2);
+
+}
