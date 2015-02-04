@@ -55,44 +55,47 @@ static void init_source(struct Source *source) {
 }
 
 static void execute_source(struct Source *source) {
-	static int x, y;
+	static int offset;
 
-	//Convert the pixels to 32 bit
-	Uint32 *pixels = (Uint32 *)surface->pixels;
+	// Get the requested pixel
+	void *addr = &((uint8_t *)surface->pixels)[offset];
 
-	//Get the requested pixel
-	if (x == surface->w) {
-		x = 0;
-		y++;
+	uint8_t luminance;
+	SDL_PixelFormat *fmt = surface->format;
+	if (fmt->BitsPerPixel == 8) {
+		luminance = *((uint8_t *)addr);
 	}
 	else {
-		x++;
+		uint32_t pixel = *(uint32_t *)addr;
+
+		Uint32 temp = pixel & fmt->Rmask;  /* Isolate red component */
+		temp = temp >> fmt->Rshift; /* Shift it down to 8-bit */
+		temp = temp << fmt->Rloss;  /* Expand to a full 8-bit number */
+		uint8_t red = (Uint8)temp;
+
+		/* Get Green component */
+		temp = pixel & fmt->Gmask;  /* Isolate green component */
+		temp = temp >> fmt->Gshift; /* Shift it down to 8-bit */
+		temp = temp << fmt->Gloss;  /* Expand to a full 8-bit number */
+		uint8_t green = (Uint8)temp;
+
+		/* Get Blue component */
+		temp = pixel & fmt->Bmask;  /* Isolate blue component */
+		temp = temp >> fmt->Bshift; /* Shift it down to 8-bit */
+		temp = temp << fmt->Bloss;  /* Expand to a full 8-bit number */
+		uint8_t blue = (Uint8)temp;
+
+		luminance = ((66 * red + 129 * green + 25 * blue + 128) >> 8) + 16;
 	}
-	Uint32 pixel = pixels[(y * surface->w) + x];
-
-	/* Get Red component */
-	SDL_PixelFormat *fmt = surface->format;
-	Uint32 temp = pixel & fmt->Rmask;  /* Isolate red component */
-	temp = temp >> fmt->Rshift; /* Shift it down to 8-bit */
-	temp = temp << fmt->Rloss;  /* Expand to a full 8-bit number */
-	uint8_t red = (Uint8)temp;
-
-	/* Get Green component */
-	temp = pixel & fmt->Gmask;  /* Isolate green component */
-	temp = temp >> fmt->Gshift; /* Shift it down to 8-bit */
-	temp = temp << fmt->Gloss;  /* Expand to a full 8-bit number */
-	uint8_t green = (Uint8)temp;
-
-	/* Get Blue component */
-	temp = pixel & fmt->Bmask;  /* Isolate blue component */
-	temp = temp >> fmt->Bshift; /* Shift it down to 8-bit */
-	temp = temp << fmt->Bloss;  /* Expand to a full 8-bit number */
-	uint8_t blue = (Uint8)temp;
-
-	uint8_t luminance = ((66 * red + 129 * green + 25 * blue + 128) >> 8) + 16;
 
 	source->sobel_pixels_next = luminance;
 	source->sobel_pixels_send_next = 1;
+
+	// update position
+	offset += fmt->BytesPerPixel;
+	if (offset == surface->w * surface->h) {
+		offset = 0;
+	}
 }
 
 int main(int argc, char** a2rgv) {
@@ -123,18 +126,21 @@ int main(int argc, char** a2rgv) {
 	int i = 0;
 	while (1) {
 		SDL_Event event;
-		SDL_WaitEvent(&event);
-		if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
-			// closing any of the windows quits the application
-			break;
+		if (SDL_PollEvent(&event)) {
+			if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
+				// closing any of the windows quits the application
+				break;
+			}
 		}
 
 		sobelFilterTest.execute(&sobelFilterTest);
-		uint8_t pix = (uint8_t) sobelFilterTest.kernel.res;
+		uint8_t pix = (uint8_t)sobelFilterTest.kernel.res;
 
 		SDL_SetRenderDrawColor(renderer, pix, pix, pix, SDL_ALPHA_OPAQUE);
 		SDL_RenderDrawPoint(renderer, i % 512, i / 512);
-		SDL_RenderPresent(renderer);
+		if (i % 512 == 0) {
+			SDL_RenderPresent(renderer);
+		}
 		i++;
 	}
 
