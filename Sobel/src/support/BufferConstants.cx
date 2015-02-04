@@ -9,8 +9,8 @@ bundle BufferConstants {
 	uint PIXEL_SIZE = 8;
 	typedef unsigned int<PIXEL_SIZE> pix_t;
 
-	uint LINE_WIDTH = 3;
+	uint LINE_WIDTH = 9;
 	typedef uint<LINE_WIDTH> col_t;
-	const uint<LINE_WIDTH> NUM_PIXELS_PER_LINE = 4 /* (1 << LINE_WIDTH) - 1 */;
+	const uint<LINE_WIDTH> NUM_PIXELS_PER_LINE = 512 /* 1 << LINE_WIDTH */;
 
 }
