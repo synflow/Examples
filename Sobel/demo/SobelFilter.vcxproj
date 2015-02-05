@@ -152,7 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\sim\generated\src\SobelFilterTest.c" />
+    <ClCompile Include="..\sim\generated\src\SobelFilter.c" />
     <ClCompile Include="src\sobel_filter.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

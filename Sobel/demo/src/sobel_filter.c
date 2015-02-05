@@ -2,7 +2,7 @@
 #include <stdio.h> /* for fprintf() */
 #include <stdlib.h> /* for atexit() */
 
-#include "SobelFilterTest.h"
+#include "SobelFilter.h"
 
 SDL_Surface *surface;
 
@@ -49,12 +49,7 @@ static SDL_Window *createTargetWindow(SDL_Window *winSource) {
 	return window;
 }
 
-static void init_source(struct Source *source) {
-	((void (*)(struct Source *)) source->data)(source);
-	printf("intialized source\n");
-}
-
-static void execute_source(struct Source *source) {
+static void execute_stimulus(struct Stimulus *stimulus) {
 	static int offset;
 
 	// Get the requested pixel
@@ -88,8 +83,8 @@ static void execute_source(struct Source *source) {
 		luminance = ((66 * red + 129 * green + 25 * blue + 128) >> 8) + 16;
 	}
 
-	source->sobel_pixels_next = luminance;
-	source->sobel_pixels_send_next = 1;
+	stimulus->pixels_next = luminance;
+	stimulus->pixels_send_next = 1;
 
 	// update position
 	offset += fmt->BytesPerPixel;
@@ -113,15 +108,13 @@ int main(int argc, char** a2rgv) {
 	SDL_Renderer *renderer = SDL_CreateRenderer(winTarget, -1, SDL_RENDERER_ACCELERATED);
 	SDL_RenderClear(renderer);
 
-	struct SobelFilterTest sobelFilterTest = { 0 };
-	printf("sizeof sobelFilterTest = %i\n", sizeof(sobelFilterTest));
-	setup_SobelFilterTest(&sobelFilterTest);
+	struct SobelFilter_app sobelFilter = { 0 };
+	printf("sizeof sobelFilter = %i\n", sizeof(sobelFilter));
+	setup_SobelFilter_app(&sobelFilter);
 
-	sobelFilterTest.source.data = sobelFilterTest.source.init;
-	sobelFilterTest.source.init = init_source;
-	sobelFilterTest.source.execute = execute_source;
+	sobelFilter.stimulus.execute = execute_stimulus;
 
-	sobelFilterTest.init(&sobelFilterTest);
+	sobelFilter.init(&sobelFilter);
 
 	int i = 0;
 	while (1) {
@@ -133,8 +126,8 @@ int main(int argc, char** a2rgv) {
 			}
 		}
 
-		sobelFilterTest.execute(&sobelFilterTest);
-		uint8_t pix = (uint8_t)sobelFilterTest.kernel.res;
+		sobelFilter.execute(&sobelFilter);
+		uint8_t pix = (uint8_t)sobelFilter.kernel.res;
 
 		SDL_SetRenderDrawColor(renderer, pix, pix, pix, SDL_ALPHA_OPAQUE);
 		SDL_RenderDrawPoint(renderer, i % 512, i / 512);
