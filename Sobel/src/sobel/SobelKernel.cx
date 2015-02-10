@@ -19,10 +19,10 @@ task SobelKernel {
 			p10 = p10.read(), /*    p11.read */ p12 = p12.read(),
 			p20 = p20.read(), p21 = p21.read(), p22 = p22.read();
 			
-		print('got values: ');
-		print(p00, ' ', p01, ' ', p02);
-		print(p10, ' ', 0, ' ', p12);
-		print(p20, ' ', p21, ' ', p22);
+		print("got values: ");
+		print(p00, " ", p01, " ", p02);
+		print(p10, " ", 0, " ", p12);
+		print(p20, " ", p21, " ", p22);
 
 		i15 Gx =
 			-p00     + p02
