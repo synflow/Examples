@@ -22,9 +22,9 @@ network LineBufferTest {
 	expected = new task {
 		void setup() {
 			for (int i = 0; i < 64; i++) {
-				print('p0 = ', buf.p0.read());
-				print('p1 = ', buf.p1.read());
-				print('p2 = ', buf.p2.read());
+				print("p0 = ", buf.p0.read());
+				print("p1 = ", buf.p1.read());
+				print("p2 = ", buf.p2.read());
 			}
 		}
 	};

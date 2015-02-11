@@ -33,7 +33,7 @@ network LineBuffer {
 	};
 
 	feed_line2 = new task {
-		properties { type: 'combinational' }
+		properties { type: "combinational" }
 		void loop() {
 			line2.data.write(line1.q.read());
 		}
