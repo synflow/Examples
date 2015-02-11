@@ -2,20 +2,22 @@
  * Copyright (c) 2015 Big boss
  * All rights reserved.
  */
-package com.synflow.hello.src;
-import com.synflow.hello.src.Hello.*;
+package com.synflow.hello;
 
 task DriverSegment {
+	import com.synflow.hello.Hello.*;
+
 	in char character;
 	out u8 seg;
 
 	u5 value;
 
 	void loop() {
-		value = (u5) (character.read - 65);
+		value = (u5) (character.read - 'A');
 		if (value > 25) {
 			value = 25;
 		}
 		seg.write(segment[value]);
 	}
+
 }

@@ -2,10 +2,11 @@
  * Copyright (c) 2015 Big boss
  * All rights reserved.
  */
-package com.synflow.hello.src;
+package com.synflow.hello;
 
 bundle Hello {
-	const u8 segment[26] =[
+
+	const u8 segment[26] = {
 		0b1100_1000, // A
 		0b1000_0011, // b
 		0b1100_0110, // C
@@ -32,5 +33,6 @@ bundle Hello {
 		0b0111_1111, // X - not possible with a 7-seg
 		0b0111_1111, // Y - not possible with a 7-seg
 		0b0111_1111  // Z - not possible with a 7-seg
-	];
+	};
+
 }
