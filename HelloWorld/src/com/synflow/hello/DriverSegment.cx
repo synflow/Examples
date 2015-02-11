@@ -10,14 +10,23 @@ task DriverSegment {
 	in char character;
 	out u8 seg;
 
-	u5 value;
-
 	void loop() {
-		value = (u5) (character.read - 'A');
-		if (value > 25) {
-			value = 25;
+		u5 index = convert_char(character.read);
+		if (index > 25) {
+			index = 25;
 		}
-		seg.write(segment[value]);
+		seg.write(segment[index]);
+	}
+
+	const u5 convert_char(char c) {
+		if (c >= 'A' && c <= 'Z') {
+			return (u5) (c - 'A');
+		} else if (c >= 'a' && c <= 'z') {
+			return (u5) (c - 'a');
+		} else {
+			// default returns index of X
+			return (u5) ('X' - 'A');
+		}
 	}
 
 }

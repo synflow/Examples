@@ -7,10 +7,10 @@ package com.synflow.hello;
 task WordToDisplay {
 	out char character;
 
-	const char message[11] = {'H', 'E', 'L', 'L', 'O', ' ', 'W', 'O', 'R', 'L', 'D'};
+	const char message[12] = {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'};
 
 	void loop() {
-		for (u4 i = 0; i != 12; i++) {
+		for (u4 i = 0; i != 13; i++) {
 			character.write(message[i]);
 		}
 	}
