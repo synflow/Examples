@@ -10,7 +10,7 @@ task WordToDisplay {
 	const char message[12] = {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'};
 
 	void loop() {
-		for (u4 i = 0; i != 13; i++) {
+		for (u4 i = 0; i != 12; i++) {
 			character.write(message[i]);
 		}
 	}
