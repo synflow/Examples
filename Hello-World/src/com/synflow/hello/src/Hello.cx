@@ -1,0 +1,36 @@
+/*
+ * Copyright (c) 2015 Big boss
+ * All rights reserved.
+ */
+package com.synflow.hello.src;
+
+bundle Hello {
+	const u8 segment[26] =[
+		0b1100_1000, // A
+		0b1000_0011, // b
+		0b1100_0110, // C
+		0b1010_0001, // d
+		0b1000_0110, // E
+		0b1000_1110, // F
+		0b1000_0100, // g
+		0b1000_1011, // h
+		0b0111_1111, // i - not possible with a 7-seg
+		0b1111_0000, // J
+		0b1000_1001, // K
+		0b1100_0111, // L
+		0b0111_1111, // M - not possible with a 7-seg
+		0b0111_1111, // N - not possible with a 7-seg
+		0b1010_0111, // o
+		0b1000_1100, // p
+		0b1001_1000, // q
+		0b0111_1111, // R - not possible with a 7-seg
+		0b1001_0010, // S
+		0b0111_1111, // T - not possible with a 7-seg
+		0b1100_0000, // U
+		0b0111_1111, // V - not possible with a 7-seg
+		0b0111_1111, // W - not possible with a 7-seg
+		0b0111_1111, // X - not possible with a 7-seg
+		0b0111_1111, // Y - not possible with a 7-seg
+		0b0111_1111  // Z - not possible with a 7-seg
+	];
+}
