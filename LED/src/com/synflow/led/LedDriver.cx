@@ -8,16 +8,30 @@ task LedDriver {
 	out u8 leds;
 	
 	void loop() {
+		// Back
+		leds.write(0b1111_1111);		
+		leds.write(0b0111_1111);
+		leds.write(0b0011_1111);
+		leds.write(0b0001_1111);
+		leds.write(0b1000_1111);
+		leds.write(0b1100_0111);
+		leds.write(0b1110_0011);
+		leds.write(0b1110_0011);
+		leds.write(0b1111_0001);
+		leds.write(0b1111_1000);
+		leds.write(0b1111_1100);
+		leds.write(0b1111_1110);
+		// And forth
 		leds.write(0b1111_1111);
 		leds.write(0b1111_1110);
 		leds.write(0b1111_1100);
-		leds.write(0b1111_1001);
-		leds.write(0b1111_0011);
-		leds.write(0b1110_0111);
-		leds.write(0b1100_1111);
-		leds.write(0b1001_1111);
+		leds.write(0b1111_1000);
+		leds.write(0b1111_0001);
+		leds.write(0b1110_0011);
+		leds.write(0b1100_0111);
+		leds.write(0b1000_1111);
+		leds.write(0b0001_1111);
 		leds.write(0b0011_1111);
 		leds.write(0b0111_1111);
-		leds.write(0b1111_1111);
 	}
 }
