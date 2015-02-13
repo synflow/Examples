@@ -11,21 +11,21 @@ task DriverSegment {
 	out u8 seg;
 
 	void loop() {
-		u5 index = convert_char(character.read);
-		if (index > 25) {
-			index = 25;
+		u6 index = convert_char(character.read);
+		if (index > 59) {
+			index = 3;
 		}
 		seg.write(segment[index]);
 	}
 
-	const u5 convert_char(char c) {
-		if (c >= 'A' && c <= 'Z') {
-			return (u5) (c - 'A');
+	const u6 convert_char(char c) {
+		if (c <= 'Z') {
+			return (u6) (c - ' ');
 		} else if (c >= 'a' && c <= 'z') {
-			return (u5) (c - 'a');
+			return (u6) (c - ' ' - ' ');
 		} else {
 			// default returns index of X
-			return (u5) ('X' - 'A');
+			return (u6) ('X');
 		}
 	}
 

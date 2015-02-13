@@ -7,16 +7,18 @@ package com.synflow.hello;
 network HelloWorld {
 	import com.synflow.hello.WordToDisplay;
 	import com.synflow.hello.DriverSegment;
+	out u8 seg;
 
 	wordToDisplay = new WordToDisplay();
 
 	driverSegment = new DriverSegment();
 	driverSegment.reads(wordToDisplay.character);
+	this.reads(driverSegment.seg);
 
+	// Simulation
 	printer = new task {
 		void loop() {
 			print(driverSegment.seg.read());
 		}
 	};
-
 }
