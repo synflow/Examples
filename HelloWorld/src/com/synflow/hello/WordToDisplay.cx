@@ -7,7 +7,7 @@ package com.synflow.hello;
 task WordToDisplay {
 	out char character;
 
-	const char message[12] = {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '!'};
+	const char message[12] = "Hello\x20world\041";
 
 	void loop() {
 		for (u4 i = 0; i != 12; i++) {
