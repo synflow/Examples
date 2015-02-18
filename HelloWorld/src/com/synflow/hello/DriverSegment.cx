@@ -20,11 +20,14 @@ task DriverSegment {
 
 	const u6 convert_char(char c) {
 		if (c <= 'Z') {
+		// Subtract 32 so all characters from 'SP' to 'Z' point to the right place on the tab  			
 			return (u6) (c - ' ');
 		} else if (c >= 'a' && c <= 'z') {
+		// Subtract 32 so lower case characters (that cannot be printed) point to upper case characters
+		// Subtract another 32 so the pointer points to the right values on the table 			
 			return (u6) (c - ' ' - ' ');
 		} else {
-			// default returns index of X
+		// default returns index of X
 			return (u6) ('X');
 		}
 	}
