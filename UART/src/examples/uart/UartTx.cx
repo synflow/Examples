@@ -37,20 +37,20 @@ task UartTx {
 	import examples.uart.Uart.*;
 
 	in sync u8 din;
-	out bool dout, dataReady;
+	out bool dout, dataReady_n;
 
 	u8 data;
 	u4 i;
 
 	void setup() {
-		dataReady.write(true);
+		dataReady_n.write(false);
 		dout.write(true);
 	}
 
 	void loop() {
 	// wait for data to read
 		data = din.read();
-		dataReady.write(false);
+		dataReady_n.write(true);
 
 		// start bit
 		dout.write(0);
@@ -66,7 +66,7 @@ task UartTx {
 		// stop bit
 		dout.write(true);
 		waitDivisor();
-		dataReady.write(true);
+		dataReady_n.write(false);
 	}
 
 	u11 count;

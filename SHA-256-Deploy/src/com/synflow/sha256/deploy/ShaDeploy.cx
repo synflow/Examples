@@ -5,20 +5,62 @@
 package com.synflow.sha256.deploy;
 
 network ShaDeploy {
+	import com.synflow.led.LedDriver;
+	import examples.uart.UartRx;
+	import examples.uart.UartTx;
+	import com.synflow.sha256.step2.TopShaStep2;
+
 	properties {
 		clocks: ["clkLed", "clkUART"]
-	}	
-	
-	in bool din;
-	out bool dout, u8 leds;
-	
-	ledDriver = new com.synflow.led.LedDriver({clocks: ["clkLed"]});
-	
-	uartRx = new examples.uart.UartRx({clocks: ["clkUART"]});
-	uartRx.reads(din);
+	}
 
-	uartTx = new examples.uart.UartTx({clocks: ["clkUART"]});
-	uartTx.reads(uartRx.dout);
-	
-	this.reads(uartTx.dout, ledDriver.leds);
+	in bool uart_rxd, uart_cts;
+	out bool uart_txd, uart_rts, u8 leds;
+
+	ledDriver = new LedDriver({ clocks: ["clkLed"] });
+
+	uartRx = new UartRx({ clocks: ["clkUART"] });
+	uartRx.reads(uart_rxd);
+
+	convert8to32 = new task {
+		properties { clocks: ["clkUART"] }
+		out sync u32 msg_o;
+
+		u32 msg;
+		u2 i;
+		void loop() {
+			msg = (u32) ((msg << 8) | uartRx.dout.read());
+			if (i == 3) {
+				i = 0;
+				msg_o.write(msg);
+			} else {
+				i++;
+			}
+		}
+	};
+
+	topShaStep2 = new TopShaStep2({ clocks: ["clkUART"] });
+	topShaStep2.reads(convert8to32.msg_o);
+
+	convert256to8 = new task {
+		properties { clocks: ["clkUART"] }
+		out sync u8 msg_o;
+
+		u256 msg;
+		void loop() {
+			IDLE:
+			msg = topShaStep2.hash.read();
+			loop:
+			for (u5 i = 0; i != 31 && !uartTx.dataReady_n.read(); i++) {
+				msg_o.write(msg & 0xFF);
+				msg = msg >> 8;
+			}
+		}
+	};
+
+	uartTx = new UartTx({ clocks: ["clkUART"] });
+	uartTx.reads(convert256to8.msg_o);
+
+	this.reads(uartTx.dout, uartTx.dataReady_n, ledDriver.leds);
+
 }
