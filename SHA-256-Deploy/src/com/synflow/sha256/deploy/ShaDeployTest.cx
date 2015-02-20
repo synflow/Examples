@@ -41,7 +41,7 @@ network ShaDeployTest {
 	source = new task {
 		out bool txD, cts;
 
-		u100 stimulus = 0x6162638000000000000000018;
+		u512 stimulus = 0x1800_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_8063_6261;
 		u4 i;
 
 		void loop() {
@@ -49,17 +49,17 @@ network ShaDeployTest {
 			cts.write(0);
 			txD.write(1);
 			waitDivisor();
-			START:
+			start:
 			txD.write(0);
 			i = 0;
 			waitDivisor();
-			DATA:
+			data:
 			for (; i < 8; i++) {
 				txD.write(stimulus[0]);
 				stimulus >>= 1;
 				waitDivisor();
 			}
-			STOP:
+			stop:
 			txD.write(1);
 			waitDivisor();
 		}

@@ -48,13 +48,13 @@ network ShaDeploy {
 	in bool uart_rxd, uart_cts;
 	out bool uart_txd, uart_rts, u8 leds;
 
-	ledDriver = new LedDriver({ clocks: ["clkLed"] });
+	ledDriver = new LedDriver({ clock: "clkLed" });
 
-	uartRx = new UartRx({ clocks: ["clkUART"] });
+	uartRx = new UartRx({ clock: "clkUART" });
 	uartRx.reads(uart_rxd);
 
 	convert8to32 = new task {
-		properties { clocks: ["clkUART"] }
+		properties { clock: "clkUART" }
 		out sync u32 msg_o;
 
 		u32 msg;
@@ -71,11 +71,31 @@ network ShaDeploy {
 		}
 	};
 
-	topShaStep2 = new TopShaStep2({ clocks: ["clkUART"] });
-	topShaStep2.reads(convert8to32.msg_o);
+	buffer = new task {
+		properties { clock: "clkUART" }
+		out sync u32 msg_o;
+
+		u32 msg[16];
+		u4 i, j;
+		void loop() {
+			j = 0;
+			msg[i] = convert8to32.msg_o.read();
+			if (i == 15) {
+				for (; j != 15 && i ==15; j++){
+					msg_o.write(msg[j]);
+				}
+				i = 0;
+			} else {
+				i++;
+			}
+		}
+	};
+
+	topShaStep2 = new TopShaStep2({ clock: "clkUART" });
+	topShaStep2.reads(buffer.msg_o);
 
 	convert256to8 = new task {
-		properties { clocks: ["clkUART"] }
+		properties { clock: "clkUART" }
 		out sync u8 msg_o;
 
 		u256 hash;
@@ -92,7 +112,7 @@ network ShaDeploy {
 		}
 	};
 
-	uartTx = new UartTx({ clocks: ["clkUART"] });
+	uartTx = new UartTx({ clock: "clkUART" });
 	uartTx.reads(convert256to8.msg_o);
 
 	this.reads(uartTx.dout, uartTx.dataReady_n, ledDriver.leds);
