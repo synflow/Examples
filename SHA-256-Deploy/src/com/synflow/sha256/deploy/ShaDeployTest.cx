@@ -26,75 +26,63 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
- 
 package com.synflow.sha256.deploy;
 
 /**
- * This is a network to deploy the SHA-256 in a FPGA.
+ * This is the test of the SHA to deploy on a FPGA.
  * 
  * @author Matthieu Wipliez
  * @author Nicolas Siret
  */
-network ShaDeploy {
-	import com.synflow.led.LedDriver;
-	import examples.uart.UartRx;
-	import examples.uart.UartTx;
-	import com.synflow.sha256.step2.TopShaStep2;
+network ShaDeployTest {
+	import com.synflow.sha256.deploy.ShaDeploy;
+	import examples.uart.Uart.*;
 
-	properties {
-		clocks: ["clkLed", "clkUART"]
-	}
+	source = new task {
+		out bool txD, cts;
 
-	in bool uart_rxd, uart_cts;
-	out bool uart_txd, uart_rts, u8 leds;
+		u100 stimulus = 0x6162638000000000000000018;
+		u4 i;
 
-	ledDriver = new LedDriver({ clocks: ["clkLed"] });
-
-	uartRx = new UartRx({ clocks: ["clkUART"] });
-	uartRx.reads(uart_rxd);
-
-	convert8to32 = new task {
-		properties { clocks: ["clkUART"] }
-		out sync u32 msg_o;
-
-		u32 msg;
-		u2 i;
-		void loop() {
-			msg = (u32) ((msg << 8) | uartRx.dout.read());
-			if (i == 3) {
-				i = 0;
-				print("message: ", msg);
-				msg_o.write(msg);
-			} else {
-				i++;
-			}
-		}
-	};
-
-	topShaStep2 = new TopShaStep2({ clocks: ["clkUART"] });
-	topShaStep2.reads(convert8to32.msg_o);
-
-	convert256to8 = new task {
-		properties { clocks: ["clkUART"] }
-		out sync u8 msg_o;
-
-		u256 hash;
 		void loop() {
 			IDLE:
-			hash = topShaStep2.hash.read();
-			print("hash: ", hash);
-			loop:
-			for (u5 i = 0; i != 31 && !uartTx.dataReady_n.read(); i++) {
-				msg_o.write(hash & 0xFF);
-				print("UART hash: ", hash & 0xFF);
-				hash = hash >> 8;
+			cts.write(0);
+			txD.write(1);
+			waitDivisor();
+			START:
+			txD.write(0);
+			i = 0;
+			waitDivisor();
+			DATA:
+			for (; i < 8; i++) {
+				txD.write(stimulus[0]);
+				stimulus >>= 1;
+				waitDivisor();
+			}
+			STOP:
+			txD.write(1);
+			waitDivisor();
+		}
+
+		u11 count;
+
+		void waitDivisor() {
+			for (count = DIVISOR; count != 0; count--) {
 			}
 		}
 	};
 
-	uartTx = new UartTx({ clocks: ["clkUART"] });
-	uartTx.reads(convert256to8.msg_o);
-
-	this.reads(uartTx.dout, uartTx.dataReady_n, ledDriver.leds);
+	shaDeploy = new ShaDeploy();
+	shaDeploy.reads(source.txD, source.cts);
+	
+	 /*expected = new task {
+		void setup() {	
+			u256 dut_hash = top_sha.hash.read;
+			print("read hash from dut: ", dut_hash);
+			assert(dut_hash == 0xBA7816BF_8F01CFEA_414140DE_5DAE2223_B00361A3_96177A9C_B410FF61_F20015AD);
+			print("assertion passed");
+		}
+	};*/
 
 }
+
