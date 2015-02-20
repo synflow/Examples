@@ -103,6 +103,7 @@ network ShaDeploy {
 			IDLE:
 			hash = topShaStep2.hash.read();
 			print("hash: ", hash);
+			assert(hash == 0xBA7816BF_8F01CFEA_414140DE_5DAE2223_B00361A3_96177A9C_B410FF61_F20015AD);
 			loop:
 			for (u5 i = 0; i != 31 && !uartTx.dataReady_n.read(); i++) {
 				msg_o.write(hash & 0xFF);
