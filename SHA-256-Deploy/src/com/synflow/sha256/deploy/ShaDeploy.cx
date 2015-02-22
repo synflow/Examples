@@ -26,7 +26,6 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
- 
 package com.synflow.sha256.deploy;
 
 /**
@@ -71,20 +70,21 @@ network ShaDeploy {
 		}
 	};
 
-	buffer = new task {
+	bufferRx = new task {
 		properties { clock: "clkUART" }
 		out sync u32 msg_o;
 
 		u32 msg[16];
-		u4 i, j;
+		u5 i, j;
 		void loop() {
 			j = 0;
 			msg[i] = convert8to32.msg_o.read();
 			if (i == 15) {
-				for (; j != 15 && i ==15; j++){
+				for (; j <= 15; j++) {
 					msg_o.write(msg[j]);
 				}
 				i = 0;
+				j = 0;
 			} else {
 				i++;
 			}
@@ -92,20 +92,21 @@ network ShaDeploy {
 	};
 
 	topShaStep2 = new TopShaStep2({ clock: "clkUART" });
-	topShaStep2.reads(buffer.msg_o);
+	topShaStep2.reads(bufferRx.msg_o);
 
 	convert256to8 = new task {
 		properties { clock: "clkUART" }
 		out sync u8 msg_o;
 
 		u256 hash;
+		u6 i;
 		void loop() {
-			IDLE:
-			hash = topShaStep2.hash.read();
+			IDLE: hash = topShaStep2.hash.read();
+			i = 0;
 			print("hash: ", hash);
 			assert(hash == 0xBA7816BF_8F01CFEA_414140DE_5DAE2223_B00361A3_96177A9C_B410FF61_F20015AD);
-			loop:
-			for (u5 i = 0; i != 31 && !uartTx.dataReady_n.read(); i++) {
+			print("assertion passed");
+			loop: for (; i != 32; i++) {
 				msg_o.write(hash & 0xFF);
 				print("UART hash: ", hash & 0xFF);
 				hash = hash >> 8;
@@ -113,8 +114,30 @@ network ShaDeploy {
 		}
 	};
 
+	bufferTx = new task {
+		properties { clock: "clkUART" }
+		out sync u8 msg_o;
+
+		u8 msg[32];
+		u5 i, j;
+		void loop() {
+			if (i == 31 && j == 31 && !uartTx.dataReady_n.read()) {
+				msg_o.write(msg[j]);
+				i = 0;
+				j = 0;
+			} else if (i == 31 && !uartTx.dataReady_n.read()) {
+				msg_o.write(msg[j]);
+				j++;
+			} else if (i != 31) {
+				msg[i] = convert256to8.msg_o.read();
+				i++;
+			}
+			idle(1);
+		}
+	};
+
 	uartTx = new UartTx({ clock: "clkUART" });
-	uartTx.reads(convert256to8.msg_o);
+	uartTx.reads(bufferTx.msg_o);
 
 	this.reads(uartTx.dout, uartTx.dataReady_n, ledDriver.leds);
 
