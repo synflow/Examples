@@ -32,7 +32,7 @@ task UartRx {
 	import examples.uart.Uart.*;
 
 	in bool din;
-	out sync u8 dout;
+	out sync char dout;
 
 	bool sin_old = false, sin = false;
 

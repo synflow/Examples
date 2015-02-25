@@ -36,7 +36,7 @@ package examples.uart;
 task UartTx {
 	import examples.uart.Uart.*;
 
-	in sync u8 din;
+	in sync char din;
 	out bool dout, dataReady_n;
 
 	u8 data;
