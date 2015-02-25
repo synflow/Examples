@@ -44,21 +44,35 @@ network ShaDeployTest {
 		u512 stimulus =
 		0x1800_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_8063_6261;
 		u4 i;
+		u6 j;
 
 		void loop() {
-			IDLE: cts.write(0);
+			IDLE: 
+			cts.write(0);
 			txD.write(1);
 			waitDivisor();
-			start: txD.write(0);
+			
+			start: 
+			txD.write(0);
 			i = 0;
 			waitDivisor();
-			data: for (; i < 8; i++) {
+			
+			data: 
+			for (; i < 8; i++) {
 				txD.write(stimulus[0]);
 				stimulus >>= 1;
 				waitDivisor();
 			}
-			stop: txD.write(1);
+			
+			stop: 
+			txD.write(1);
 			waitDivisor();
+			if (j == 63) {
+				stimulus = 0x1800_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_8063_6261;
+				j = 0;
+			} else {
+				j++;
+			}
 		}
 
 		u11 count;
@@ -71,14 +85,5 @@ network ShaDeployTest {
 
 	shaDeploy = new ShaDeploy();
 	shaDeploy.reads(source.txD, source.cts);
-
-	/*expected = new task {
-		void setup() {	
-			u256 dut_hash = top_sha.hash.read;
-			print("read hash from dut: ", dut_hash);
-			assert(dut_hash == 0xBA7816BF_8F01CFEA_414140DE_5DAE2223_B00361A3_96177A9C_B410FF61_F20015AD);
-			print("assertion passed");
-		}
-	};*/
 }
 

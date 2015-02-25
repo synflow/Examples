@@ -38,7 +38,7 @@ network ShaDeploy {
 	import com.synflow.led.LedDriver;
 	import examples.uart.UartRx;
 	import examples.uart.UartTx;
-	import com.synflow.sha256.step2.TopShaStep2;
+	import com.synflow.sha256.SHA256;
 
 	properties {
 		clocks: ["clkLed", "clkUART"]
@@ -51,93 +51,88 @@ network ShaDeploy {
 
 	uartRx = new UartRx({ clock: "clkUART" });
 	uartRx.reads(uart_rxd);
-
+	/*
 	convert8to32 = new task {
 		properties { clock: "clkUART" }
 		out sync u32 msg_o;
 
-		u32 msg;
+		u512 msg;
 		u2 i;
 		void loop() {
-			msg = (u32) ((msg << 8) | uartRx.dout.read());
-			if (i == 3) {
+			msg = (u512) ((msg << 8) | uartRx.dout.read());
+			if (i == 63) {
 				i = 0;
-				print("message: ", msg);
-				msg_o.write(msg);
+				//print("message: ", msg);
+				for (; j != 16 ; j++) {
+				  msg_o.write((u32) msg);
+				  msg >>= 32;
+				 }
 			} else {
 				i++;
-			}
-		}
-	};
-
-	bufferRx = new task {
-		properties { clock: "clkUART" }
-		out sync u32 msg_o;
-
-		u32 msg[16];
-		u5 i, j;
-		void loop() {
-			j = 0;
-			msg[i] = convert8to32.msg_o.read();
-			if (i == 15) {
-				for (; j <= 15; j++) {
-					msg_o.write(msg[j]);
-				}
-				i = 0;
 				j = 0;
-			} else {
-				i++;
 			}
 		}
 	};
 
-	topShaStep2 = new TopShaStep2({ clock: "clkUART" });
+	topShaStep2 = new SHA256({ clock: "clkUART" });
 	topShaStep2.reads(bufferRx.msg_o);
+*/
+	source = new task {
+		properties {
+			clocks: ["clkUART"]
+		}
+		out sync u256 msg_o;
 
-	convert256to8 = new task {
+		const u256 stimulus = 0xBA7816BF_8F01CFEA_414140DE_5DAE2223_B00361A3_96177A9C_B410FF61_F20015AD;
+
+		void loop() {
+			msg_o.write(stimulus);
+			idle(100000000);
+		}
+	};
+
+	convert256toChar = new task {
 		properties { clock: "clkUART" }
-		out sync u8 msg_o;
+		out sync char msg_o;
 
 		u256 hash;
-		u6 i;
+		u4 n;
+		u7 i;
 		void loop() {
-			IDLE: hash = topShaStep2.hash.read();
-			i = 0;
+			IDLE: hash = source.msg_o.read();
 			print("hash: ", hash);
 			assert(hash == 0xBA7816BF_8F01CFEA_414140DE_5DAE2223_B00361A3_96177A9C_B410FF61_F20015AD);
 			print("assertion passed");
-			loop: for (; i != 32; i++) {
-				msg_o.write(hash & 0xFF);
-				print("UART hash: ", hash & 0xFF);
-				hash = hash >> 8;
+			loop: for (i = 0; i != 64; i++) {
+				n = (u4) hash;
+				hash >>= 4;
+				if (n >= 0 && n <= 9) {
+					msg_o.write('0' + n);
+				}
+				else {
+					msg_o.write((char) ('a' + n - 10));
+				}
 			}
 		}
 	};
 
-	bufferTx = new task {
-		properties { clock: "clkUART" }
-		out sync u8 msg_o;
+	mux = new task {
+		properties {
+			clocks: [], reset: null
+		}
+		out sync char msg_o;
 
-		u8 msg[32];
-		u5 i, j;
 		void loop() {
-			if (i == 31 && j == 31 && !uartTx.dataReady_n.read()) {
-				msg_o.write(msg[j]);
-				i = 0;
-				j = 0;
-			} else if (i == 31 && !uartTx.dataReady_n.read()) {
-				msg_o.write(msg[j]);
-				j++;
-			} else if (i != 31) {
-				msg[i] = convert256to8.msg_o.read();
-				i++;
+			if (convert256toChar.msg_o.available()) {
+				msg_o.write(convert256toChar.msg_o.read());
+			} else if (uartRx.dout.available()) {
+				msg_o.write(uartRx.dout.read());
 			}
-			idle(1);
 		}
 	};
 
 	uartTx = new UartTx({ clock: "clkUART" });
-	uartTx.reads(bufferTx.msg_o);
+	uartTx.reads(mux.msg_o);
 
 	this.reads(uartTx.dout, uartTx.dataReady_n, ledDriver.leds);
 
