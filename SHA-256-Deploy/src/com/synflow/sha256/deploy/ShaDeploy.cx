@@ -38,7 +38,7 @@ network ShaDeploy {
 	import com.synflow.led.LedDriver;
 	import examples.uart.UartRx;
 	import examples.uart.UartTx;
-	import com.synflow.sha256.SHA256;
+	import com.synflow.sha256.step2.TopShaStep2;
 
 	properties {
 		clocks: ["clkLed", "clkUART"]
@@ -65,8 +65,8 @@ network ShaDeploy {
 				i = 0;
 				//print("message: ", msg);
 				for (; j != 16 ; j++) {
-				  msg_o.write((u32) msg);
-				  msg >>= 32;
+				  msg_o.write(msg >> 480);
+				  msg <<= 32;
 				 }
 			} else {
 				i++;
@@ -75,7 +75,7 @@ network ShaDeploy {
 		}
 	};
 
-	topShaStep2 = new SHA256({ clock: "clkUART" });
+	topShaStep2 = new TopShaStep2({ clock: "clkUART" });
 	topShaStep2.reads(convertRxtoWords.msg_o);
 
 	/*source = new task {
