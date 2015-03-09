@@ -1,0 +1,16 @@
+/*
+ * Copyright (c) 2015 Big boss
+ * All rights reserved.
+ */
+package com.synflow.uart;
+
+bundle UartImp {
+
+  u5  CLK_IN_MHZ = 25;
+  u18 BAUD_RATE = 115200;
+  u5  OVERSAMPLING = 16;
+  // 
+  u15 BAUD_GEN_INC = (BAUD_RATE<<16)/(CLK_IN_MHZ * 1000 * 1000);
+  u15 BAUD_GEN_OVER = OVERSAMPLING * (BAUD_RATE<<16)/(CLK_IN_MHZ * 1000 * 1000);
+
+}

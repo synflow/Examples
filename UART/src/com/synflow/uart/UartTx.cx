@@ -26,46 +26,80 @@
  * WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-package examples.uart;
-
+package com.synflow.uart;
+import com.synflow.uart.UartImp.*;
 /**
  * This task writes a byte to the UART
  * 
  * @author Matthieu Wipliez <matthieu.wipliez@synflow.com>
  */
-task UartTx {
-	import examples.uart.Uart.*;
+network UartTx {
+	in bool cts, sync char din;
+	out bool dout, dataReady;
 
-	in sync char din;
-	out bool dout, dataReady_n;
+	prescalerTx = new task {
+	/**
+ 	 * This task implements a tick generator for the UART * 
+	 * BAUD RATE are usually from 9600 to 115200
+	 * 
+	 * To generate 115200Hz from a 25MHz clock, you divide the clock by "217,01388..." 
+	 * Not exactly a round number. The solution is to divide sometimes by 217, 
+	 * sometimes by 218, making sure the ratio stays "217,01388". 
+	 * 
+	 * To do so, we need to do something like this 
+	 *  while(1) {
+	 *    acc += 115200;
+	 *    if(acc>=2000000) 
+	 *      print("tick"); 
+	 *    acc %= 2000000;
+	 *   }
+	 * 
+	 * @author Nicolas Siret
+	 */
+		out bool tick;
 
-	u8 data;
-	u4 i;
+		u16 acc;
+		u17 tickGen;
+		void loop() {
+			tickGen = acc + BAUD_GEN_OVER;
+			tick.write(tickGen[16]);
+			acc = (u16) tickGen;
+		}
+	};
 
-	void setup() {
-		dataReady_n.write(false);
-		dout.write(true);
-	}
+	rxTask = new task {
+		u8 data;
+		u4 i;
 
-	void loop() {
-	// wait for data to read
-		data = din.read();
-		dataReady_n.write(true);
-
-		// start bit
-		dout.write(0);
-		idle(DIVISOR);
-
-		// write data (LSB)
-		for (i = 0; i < 8; i++) {
-			dout.write(data[0]);
-			data >>= 1;
-			idle(DIVISOR);
+		void setup() {
+			dataReady.write(true);
+			dout.write(true);
 		}
 
-		// stop bit
-		dout.write(true);
-		idle(DIVISOR);
-		dataReady_n.write(false);
-	}
+		void loop() {
+		// wait for data to read
+			waitData: data = din.read();
+			dataReady.write(false);
+
+			// start bit
+			while (!prescalerTx.tick.read && cts.read) {
+			}
+			start: dout.write(0);
+
+			// write data (LSB)
+			data: for (i = 0; i < 8; i++) {
+				while (!prescalerTx.tick.read) {
+				}
+				dout.write(data[0]);
+				data >>= 1;
+			}
+
+			// stop bit
+			while (!prescalerTx.tick.read) {
+			}
+			stop: dout.write(true);
+			dataReady.write(true);
+		}
+	};
+
 }

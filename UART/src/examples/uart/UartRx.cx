@@ -44,17 +44,17 @@ task UartRx {
 		}
 
 		// detected falling edge on input, wait a cycle
-		waitDivisor();
+		idle(DIVISOR - 1);
 
 		u8 data = 0;
 		u4 i;
 		// read data (LSB)
 		for (i = 0; i < 8; i++) {
-			waitDivisor_2();
+			idle(DIVISOR / 2 - 1);
 			// data is sampled at the middle of the cycle
 			data >>= 1;
 			data[7] = din.read();
-			waitDivisor_2();
+			idle(DIVISOR / 2 - 1);
 		}
 
 		dout.write(data);
@@ -63,17 +63,4 @@ task UartRx {
 		sin_old = din.read();
 		sin = din.read();
 	}
-
-	u11 count;
-
-	void waitDivisor() {
-		for (count = (u11) (DIVISOR - 1); count != 0; count--) {
-		}
-	}
-
-	void waitDivisor_2() {
-		for (count = DIVISOR / 2 - 1; count != 0; count--) {
-		}
-	}
-
 }

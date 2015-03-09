@@ -1,0 +1,91 @@
+/*
+ * Copyright (c) 2015 Big boss
+ * All rights reserved.
+ */
+package com.synflow.uart;
+
+import com.synflow.uart.UartImp.*;
+
+network UartRx {
+	in bool rx;
+	out sync char dout;
+
+	prescaler = new task {
+	/**
+ 	 * This task implements a tick generator for the UART 
+	 * BAUD RATE are usually from 9600 to 115200
+	 * 
+	 * See UartTx for more details
+	 * 
+	 * @author Nicolas Siret
+	 */
+		out bool tick;
+
+		u16 acc;
+		u17 tickGen;
+		void loop() {
+			tickGen = acc + BAUD_GEN_OVER;
+			tick.write(tickGen[16]);
+			acc = (u16) tickGen;
+		}
+	};
+
+	rxFilter = new task {
+	/**
+     * Filter the rxd to suppress spikes using a 2 bit counter
+	 * 
+	 * 
+	 * @author Nicolas Siret
+	 */
+		out bool filteredRx;
+
+		u2 counter;
+		void setup() {
+			filteredRx.write(true);
+		}
+
+		void loop() {
+			while (!prescaler.tick.read) {
+			}
+			if (rx.read && counter != 3) {
+				counter++;
+			} else if (!rx.read && counter != 0) {
+				counter--;
+			}
+			if (counter == 3) {
+				filteredRx.write(true);
+			} else if (counter == 0) {
+				filteredRx.write(false);
+			}
+		}
+	};
+
+	rxTask = new task {
+		out bool start;
+		void loop() {
+			detectStart: while (rxFilter.filteredRx.read && !prescaler.tick.read) { // Detect the start bit
+			}
+
+			waitData: for (u6 i = 0; i != OVERSAMPLING + OVERSAMPLING / 2; i++) { // Wait for the data 
+				waitTick: while (!prescaler.tick.read) {
+				}
+			}
+
+			u8 data = 0;
+			u4 i;
+
+			saveData: for (i = 0; i < 8; i++) { // read data (LSB)
+				data >>= 1;
+				data[7] = rxFilter.filteredRx.read();
+				waitOverSamp: for (u5 j = 0; j != OVERSAMPLING; j++) { // Wait for the next bit
+					waitOverTick: while (!prescaler.tick.read) {
+					}
+				}
+			}
+
+			if (rxFilter.filteredRx.read()) {
+				dout.write(data);
+			}
+		}
+	};
+}
