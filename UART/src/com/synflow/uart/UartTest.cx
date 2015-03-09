@@ -1,0 +1,58 @@
+/*
+ * Copyright (c) 2015 Big boss
+ * All rights reserved.
+ */
+package com.synflow.uart;
+
+network UartTest {
+	import com.synflow.uart.UartRx;
+
+	source = new task {
+		out bool txD, cts;
+
+		const u11 DIVISOR = 25 * 1000 * 1000 / 115200;		
+		u512 stimulus =
+		0x1835_0000_0000_1234_0000_0000_0000_0000_0000_0000_5678_0000_0000_0000_0000_ABCD_0000_0000_0000_0000_0000_0000_EFAA_0000_0000_0000_0000_0000_0000_0000_8063_6261;
+		u4 i;
+		u6 j;
+
+		void loop() {
+			IDLE: 
+			cts.write(0);
+			txD.write(1);
+			waitDivisor();
+			
+			start: 
+			txD.write(0);
+			i = 0;
+			waitDivisor();
+			
+			data: 
+			for (; i < 8; i++) {
+				txD.write(stimulus[0]);
+				stimulus >>= 1;
+				waitDivisor();
+			}
+			
+			stop: 
+			txD.write(1);
+			waitDivisor();
+			if (j == 63) {
+				stimulus = 0x1800_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_8063_6261;
+				j = 0;
+			} else {
+				j++;
+			}
+		}
+
+		u11 count;
+
+		void waitDivisor() {
+			for (count = DIVISOR; count != 0; count--) {
+			}
+		}
+	};
+	
+	uartRx = new UartRx();
+	uartRx.reads(source.txD);
+}

@@ -40,10 +40,6 @@ network UartRx {
 		out bool filteredRx;
 
 		u2 counter;
-		void setup() {
-			filteredRx.write(true);
-		}
-
 		void loop() {
 			while (!prescaler.tick.read) {
 			}
@@ -63,7 +59,12 @@ network UartRx {
 	rxTask = new task {
 		out bool start;
 		void loop() {
-			detectStart: while (rxFilter.filteredRx.read && !prescaler.tick.read) { // Detect the start bit
+			while (!rxFilter.filteredRx.read) { // Detect the start bit
+
+			}
+
+			detectStart: while (rxFilter.filteredRx.read) { // Detect the start bit
+
 			}
 
 			waitData: for (u6 i = 0; i != OVERSAMPLING + OVERSAMPLING / 2; i++) { // Wait for the data 
@@ -85,6 +86,7 @@ network UartRx {
 
 			if (rxFilter.filteredRx.read()) {
 				dout.write(data);
+				print ("data: ", data);
 			}
 		}
 	};
