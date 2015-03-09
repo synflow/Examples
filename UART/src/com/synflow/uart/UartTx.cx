@@ -35,7 +35,7 @@ import com.synflow.uart.UartImp.*;
  */
 network UartTx {
 	in bool cts, sync char din;
-	out bool dout, dataReady;
+	out bool tx, dataReady;
 
 	prescalerTx = new task {
 	/**
@@ -73,7 +73,7 @@ network UartTx {
 
 		void setup() {
 			dataReady.write(true);
-			dout.write(true);
+			tx.write(true);
 		}
 
 		void loop() {
@@ -84,20 +84,20 @@ network UartTx {
 			// start bit
 			while (!prescalerTx.tick.read && cts.read) {
 			}
-			start: dout.write(0);
+			start: tx.write(0);
 
 			// write data (LSB)
 			data: for (i = 0; i < 8; i++) {
 				while (!prescalerTx.tick.read) {
 				}
-				dout.write(data[0]);
+				tx.write(data[0]);
 				data >>= 1;
 			}
 
 			// stop bit
 			while (!prescalerTx.tick.read) {
 			}
-			stop: dout.write(true);
+			stop: tx.write(true);
 			dataReady.write(true);
 		}
 	};

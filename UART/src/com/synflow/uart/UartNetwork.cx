@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2015 Big boss
+ * All rights reserved.
+ */
+package com.synflow.uart;
+
+network UartNetwork {
+	import com.synflow.uart.UartRx;
+	import com.synflow.uart.UartTx;
+	properties {
+		clocks: ["clk_25M"]
+	}
+
+	in bool cts, rx;
+	out bool rts, tx;
+
+	uartRx = new UartRx();
+	uartRx.reads(rx);
+
+	uartTx = new UartTx();
+	uartTx.reads(cts, uartRx.dout);
+
+	dummy = new task {
+		out bool rts;
+		void loop() {
+			rts.write(false);
+
+		}
+	};
+
+	this.reads(dummy.rts, uartTx.tx);
+
+}
