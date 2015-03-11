@@ -11,81 +11,101 @@ network UartRx {
 	out sync char dout;
 
 	prescaler = new task {
-	/**
- 	 * This task implements a tick generator for the UART 
-	 * BAUD RATE are usually from 9600 to 115200
-	 * 
-	 * See UartTx for more details
-	 * 
-	 * @author Nicolas Siret
-	 */
+		/**
+	 	 * This task implements a tick generator for the UART 
+		 * BAUD RATE are usually from 9600 to 115200
+		 * 
+		 * See UartTx for more details
+		 * 
+		 * @author Nicolas Siret
+		 */
 		out sync bool tick;
 
-		u16 acc;
 		u17 tickGen;
 		void loop() {
-			tickGen = acc + BAUD_GEN_OVER;
-			acc = (u16) tickGen;
+			tickGen = (u16) tickGen + BAUD_GEN_OVER;
 			if (tickGen[16]) {
 				tick.write(tickGen[16]);
 			}
 		}
 	};
 
-	rxFilter = new task {
-	/**
-     * Filter the rxd to suppress spikes using a 2 bit counter
-	 * 
-	 * 
-	 * @author Nicolas Siret
-	 */
-		out sync bool startRx;
-		out bool filteredRx;
-
-		u2 counter;
+	sampler = new task {
+		out sync bool sample;
 		void loop() {
-			if (prescaler.tick.read) {
-			// When a data is read 4 times, the data is valid.
-				if (rx.read && counter != 3) {
-					counter++;
-				} else if (!rx.read && counter != 0) {
-					counter--;
-				} else if (counter == 3) {
-					filteredRx.write(true);
-				} else if (counter == 0) {
-					filteredRx.write(false);
-					startRx.write(true);
-				}
+			if (prescaler.tick.read()) {
+				sample.write(rx.read());
 			}
 		}
 	};
 
-	rxTask = new task {
-		out bool start;
-
-		u8 data = 0;
-		u4 i; 
-		u6 j;
+	detectStart = new task {
+		/**
+	     * Filter the rxd to suppress spikes using a 2 bit counter
+		 * 
+		 * 
+		 * @author Nicolas Siret
+		 */
+		sync {
+			in bool sample; out bool startRx;
+		}
 
 		void loop() {
-			detectStart: rxFilter.startRx.read; // Detect the start bit	
-			
-			waitData: for (j = 0; j != OVERSAMPLING + OVERSAMPLING / 2; j++) { // Wait for the data 
-				prescaler.tick.read;
-			}
-
-			saveData: for (i = 0; i != 8; i++) { // read data (LSB)
-				data >>= 1;
-				data[7] = rxFilter.filteredRx.read();
-				waitOverSamp: for (j = 0; j != OVERSAMPLING; j++) { // Wait for the next bit
-					prescaler.tick.read;
+			u5 counter = 0;
+			while (counter != 3) {
+				if (sample.read && counter != 0) {
+					counter--;
+				} else if (!sample.read) {
+					counter++;
 				}
 			}
 
-			if (rxFilter.filteredRx.read()) {
+			while (counter != OVERSAMPLING) {
+				sample.read();
+				counter++;
+			}
+			startRx.write(true);
+		}
+
+	};
+	detectStart.reads(sampler.sample);
+	
+	filter = new task {
+		in bool start;
+		out sync bool filtered;
+		u5 bit_value;
+		void loop() {
+			while (!start.read()) {}
+
+			for (u5 counter = 0; counter != OVERSAMPLING; counter++) {
+				if (sampler.sample.read()) {
+					bit_value++;
+				} else if (bit_value != 0) {
+					bit_value--;
+				}
+			}
+			
+			filtered.write(bit_value >= OVERSAMPLING / 2);
+		}
+	};
+
+	rxTask = new task {
+		u8 data;
+
+		void loop() {
+			detectStart: detectStart.startRx.read(); // Wait for the start bit
+			filter.start.write(true);
+
+			saveData: for (u4 i = 0; i != 8; i++) { // read data (LSB)
+				data >>= 1;
+				data[7] = filter.filtered.read();
+			}
+
+			if (filter.filtered.read()) {
 				dout.write(data);
 				print("UART Rx data: ", data);
 			}
+			filter.start.write(false);
 		}
 	};
 }
