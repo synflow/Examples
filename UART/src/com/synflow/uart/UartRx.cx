@@ -50,9 +50,9 @@ network UartRx {
 					counter++;
 				} else if (!rx.read && counter != 0) {
 					counter--;
-				} else if (rx.read && counter == 3) {
+				} else if (counter == 3) {
 					filteredRx.write(true);
-				} else if (!rx.read && counter == 0) {
+				} else if (counter == 0) {
 					filteredRx.write(false);
 					startRx.write(true);
 				}
@@ -84,7 +84,7 @@ network UartRx {
 
 			if (rxFilter.filteredRx.read()) {
 				dout.write(data);
-				print("data: ", data);
+				print("UART Rx data: ", data);
 			}
 		}
 	};

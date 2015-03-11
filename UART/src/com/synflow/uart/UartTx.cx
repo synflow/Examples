@@ -70,7 +70,7 @@ network UartTx {
 	};
 
 	txTask = new task {
-		u8 data;
+		char data;
 		u4 i;
 
 		void setup() {
@@ -80,25 +80,28 @@ network UartTx {
 
 		void loop() {
 		// wait for data to read
-			waitData: data = din.read();
+			waitData: data = din.read;
 			dataReady.write(false);
-
+			fence;
 			// Test CTS
-			while (cts.read) {
-			}
+			//while (cts.read) {
+			//}
+			
 			// start bit
 			prescalerTx.tick.read;
 			start: tx.write(0);
 			
-			data: for (i = 0; i < 8; i++) {// write data (LSB)
+			//prescalerTx.tick.read;
+			
+			saveData: for (i = 0; i < 8; i++) {// write data (LSB)
 				prescalerTx.tick.read;
 				tx.write(data[0]);
 				data >>= 1;
 			}
 
 			// stop bit
-			prescalerTx.tick.read;
 			stop: tx.write(true);
+			prescalerTx.tick.read;
 			dataReady.write(true);
 		}
 	};

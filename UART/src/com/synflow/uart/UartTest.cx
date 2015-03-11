@@ -6,39 +6,37 @@ package com.synflow.uart;
 
 network UartTest {
 	import com.synflow.uart.UartRx;
+	import com.synflow.uart.UartNetwork;
 
 	source = new task {
 		out bool txD, cts;
 
-		const u11 DIVISOR = 25 * 1000 * 1000 / 115200;		
+		const u11 DIVISOR = 25 * 1000 * 1000 / 115200;
 		u512 stimulus =
 		0x1835_0000_0000_1234_0000_0000_0000_0000_0000_0000_5678_0000_0000_0000_0000_ABCD_0000_0000_0000_0000_0000_0000_EFAA_0000_0000_0000_0000_0000_0000_0000_8063_6261;
 		u4 i;
 		u6 j;
 
 		void loop() {
-			IDLE: 
-			cts.write(0);
+			IDLE: cts.write(0);
 			txD.write(1);
 			waitDivisor();
-			
-			start: 
-			txD.write(0);
+
+			start: txD.write(0);
 			i = 0;
 			waitDivisor();
-			
-			data: 
-			for (; i < 8; i++) {
+
+			data: for (; i < 8; i++) {
 				txD.write(stimulus[0]);
 				stimulus >>= 1;
 				waitDivisor();
 			}
-			
-			stop: 
-			txD.write(1);
+
+			stop: txD.write(1);
 			waitDivisor();
 			if (j == 63) {
-				stimulus = 0x1800_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_8063_6261;
+				stimulus =
+				0x1800_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_0000_8063_6261;
 				j = 0;
 			} else {
 				j++;
@@ -52,7 +50,41 @@ network UartTest {
 			}
 		}
 	};
-	
-	uartRx = new UartRx();
-	uartRx.reads(source.txD);
+
+	uartNetwork = new UartNetwork();
+	uartNetwork.reads(source.cts, source.txD);
+
+	expected = new task {
+		const u11 DIVISOR = 25 * 1000 * 1000 / 115200;
+		bool sin_old = false, sin = false;
+
+		void loop() {
+		// keep reading until there is a falling edge on SIN which means until sin_old is true and sin is false
+			while (!(sin_old && !sin)) {
+				sin_old = sin;
+				sin = uartNetwork.tx.read();
+			}
+
+			// detected falling edge on input, wait a cycle
+			idle(DIVISOR - 1);
+
+			char data = 0;
+			u4 i;
+			// read data (LSB)
+			for (i = 0; i < 8; i++) {
+				idle(DIVISOR / 2 - 1);
+				// data is sampled at the middle of the cycle
+				data >>= 1;
+				data[7] = uartNetwork.tx.read();
+				idle(DIVISOR / 2 - 1);
+			}
+
+			print("Received:", data);
+
+			// go back to waiting for start of frame 
+			sin_old = uartNetwork.tx.read();
+			sin = uartNetwork.tx.read();
+		}
+	};
 }
+
