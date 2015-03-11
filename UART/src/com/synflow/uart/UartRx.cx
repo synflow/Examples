@@ -86,6 +86,7 @@ network UartRx {
 			}
 			
 			filtered.write(bit_value >= OVERSAMPLING / 2);
+			bit_value = 0;
 		}
 	};
 
