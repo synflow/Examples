@@ -56,18 +56,20 @@ network UartTx {
 	 * 
 	 * @author Nicolas Siret
 	 */
-		out bool tick;
+		out sync bool tick;
 
 		u16 acc;
 		u17 tickGen;
 		void loop() {
-			tickGen = acc + BAUD_GEN_OVER;
-			tick.write(tickGen[16]);
+			tickGen = acc + BAUD_GEN_INC;
 			acc = (u16) tickGen;
+			if (tickGen[16]){
+				tick.write(tickGen[16]);			
+			}
 		}
 	};
 
-	rxTask = new task {
+	txTask = new task {
 		u8 data;
 		u4 i;
 
@@ -81,22 +83,21 @@ network UartTx {
 			waitData: data = din.read();
 			dataReady.write(false);
 
-			// start bit
-			while (!prescalerTx.tick.read && cts.read) {
+			// Test CTS
+			while (cts.read) {
 			}
+			// start bit
+			prescalerTx.tick.read;
 			start: tx.write(0);
-
-			// write data (LSB)
-			data: for (i = 0; i < 8; i++) {
-				while (!prescalerTx.tick.read) {
-				}
+			
+			data: for (i = 0; i < 8; i++) {// write data (LSB)
+				prescalerTx.tick.read;
 				tx.write(data[0]);
 				data >>= 1;
 			}
 
 			// stop bit
-			while (!prescalerTx.tick.read) {
-			}
+			prescalerTx.tick.read;
 			stop: tx.write(true);
 			dataReady.write(true);
 		}

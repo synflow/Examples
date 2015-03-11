@@ -19,14 +19,16 @@ network UartRx {
 	 * 
 	 * @author Nicolas Siret
 	 */
-		out bool tick;
+		out sync bool tick;
 
 		u16 acc;
 		u17 tickGen;
 		void loop() {
 			tickGen = acc + BAUD_GEN_OVER;
-			tick.write(tickGen[16]);
 			acc = (u16) tickGen;
+			if (tickGen[16]) {
+				tick.write(tickGen[16]);
+			}
 		}
 	};
 
@@ -37,56 +39,52 @@ network UartRx {
 	 * 
 	 * @author Nicolas Siret
 	 */
+		out sync bool startRx;
 		out bool filteredRx;
 
 		u2 counter;
 		void loop() {
-			while (!prescaler.tick.read) {
-			}
-			if (rx.read && counter != 3) {
-				counter++;
-			} else if (!rx.read && counter != 0) {
-				counter--;
-			}
-			if (counter == 3) {
-				filteredRx.write(true);
-			} else if (counter == 0) {
-				filteredRx.write(false);
+			if (prescaler.tick.read) {
+			// When a data is read 4 times, the data is valid.
+				if (rx.read && counter != 3) {
+					counter++;
+				} else if (!rx.read && counter != 0) {
+					counter--;
+				} else if (rx.read && counter == 3) {
+					filteredRx.write(true);
+				} else if (!rx.read && counter == 0) {
+					filteredRx.write(false);
+					startRx.write(true);
+				}
 			}
 		}
 	};
 
 	rxTask = new task {
 		out bool start;
+
+		u8 data = 0;
+		u4 i; 
+		u6 j;
+
 		void loop() {
-			while (!rxFilter.filteredRx.read) { // Detect the start bit
-
+			detectStart: rxFilter.startRx.read; // Detect the start bit	
+			
+			waitData: for (j = 0; j != OVERSAMPLING + OVERSAMPLING / 2; j++) { // Wait for the data 
+				prescaler.tick.read;
 			}
 
-			detectStart: while (rxFilter.filteredRx.read) { // Detect the start bit
-
-			}
-
-			waitData: for (u6 i = 0; i != OVERSAMPLING + OVERSAMPLING / 2; i++) { // Wait for the data 
-				waitTick: while (!prescaler.tick.read) {
-				}
-			}
-
-			u8 data = 0;
-			u4 i;
-
-			saveData: for (i = 0; i < 8; i++) { // read data (LSB)
+			saveData: for (i = 0; i != 8; i++) { // read data (LSB)
 				data >>= 1;
 				data[7] = rxFilter.filteredRx.read();
-				waitOverSamp: for (u5 j = 0; j != OVERSAMPLING; j++) { // Wait for the next bit
-					waitOverTick: while (!prescaler.tick.read) {
-					}
+				waitOverSamp: for (j = 0; j != OVERSAMPLING; j++) { // Wait for the next bit
+					prescaler.tick.read;
 				}
 			}
 
 			if (rxFilter.filteredRx.read()) {
 				dout.write(data);
-				print ("data: ", data);
+				print("data: ", data);
 			}
 		}
 	};
