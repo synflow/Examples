@@ -52,7 +52,34 @@ network UartTest {
 	};
 
 	uartNetwork = new UartNetwork();
-	uartNetwork.reads(source.cts, source.txD);
+	uartNetwork.reads(source.txD);
+
+	dummyRx = new task {
+		void loop() {
+			while (uartNetwork.dataReceived_n.read) {
+			// Wait for a data
+
+			}
+			uartNetwork.rdUart.write(true);
+			uartNetwork.rdUart.write(false);
+			uartNetwork.dataUart.read();
+		}
+	};
+
+
+	dummyTx = new task {
+
+		u512 stimulus =
+		0x1835_0000_0000_1234_0000_0000_0000_0000_0000_0000_5678_0000_0000_0000_0000_ABCD_0000_0000_0000_0000_0000_0000_EFAA_0000_0000_0000_0000_0000_0000_0000_8063_6261;
+
+		void loop() {
+			while (uartNetwork.readyToSend_n.read) {
+			// Buffer is full
+			}
+			uartNetwork.dataToSend.write((u8) (stimulus << 504));
+			stimulus >>= 8;
+		}
+	};
 
 	expected = new task {
 		const u11 DIVISOR = 25 * 1000 * 1000 / 115200;

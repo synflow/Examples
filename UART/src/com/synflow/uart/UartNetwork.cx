@@ -11,23 +11,33 @@ network UartNetwork {
 		clocks: ["clk_25M"]
 	}
 
-	in bool cts, rx;
-	out bool rts, tx;
+	// RS-232
+	in bool rx;
+	out bool tx;
+	
+    // Receive Data
+    in bool rdUart;
+    out bool dataReceived_n, sync char dataUart;
+    
+    //Send Data
+    in sync char dataToSend;
+    out bool readyToSend_n;
 
+	// Connect everything
 	uartRx = new UartRx();
 	uartRx.reads(rx);
- 
+    
+    bufferRx = new std.fifo.SynchronousFIFO({depth: 32, width: 8});
+    bufferRx.reads(uartRx.dout, rdUart);
+    
+    bufferTx = new std.fifo.SynchronousFIFO({depth: 32, width: 8});
+    bufferTx.reads(dataToSend, uartTx.readBuffer);
+
 	uartTx = new UartTx();
-	uartTx.reads(cts, uartRx.dout);
+	uartTx.reads(bufferTx.empty, bufferTx.dout);
 	
-	dummy = new task {
-		out bool rts;
-		void loop() {
-			rts.write(false);
 
-		}
-	};
+	this.reads(uartTx.tx, bufferRx.empty, bufferRx.dout, bufferTx.full);
 
-	this.reads(dummy.rts, uartTx.tx);
 
 }

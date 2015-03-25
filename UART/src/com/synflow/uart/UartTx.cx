@@ -27,6 +27,7 @@
  * SUCH DAMAGE.
  */
 package com.synflow.uart;
+
 import com.synflow.uart.UartImp.*;
 /**
  * This task writes a byte to the UART
@@ -34,8 +35,8 @@ import com.synflow.uart.UartImp.*;
  * @author Matthieu Wipliez <matthieu.wipliez@synflow.com>
  */
 network UartTx {
-	in bool cts, sync char din;
-	out bool tx, dataReady;
+	in bool bufferReady_n, sync char din;
+	out bool tx, readBuffer;
 
 	prescalerTx = new task {
 	/**
@@ -63,8 +64,8 @@ network UartTx {
 		void loop() {
 			tickGen = acc + BAUD_GEN_INC;
 			acc = (u16) tickGen;
-			if (tickGen[16]){
-				tick.write(tickGen[16]);			
+			if (tickGen[16]) {
+				tick.write(tickGen[16]);
 			}
 		}
 	};
@@ -74,26 +75,26 @@ network UartTx {
 		u4 i;
 
 		void setup() {
-			dataReady.write(true);
 			tx.write(true);
 		}
 
 		void loop() {
-		// wait for data to read
-			waitData: data = din.read;
-			dataReady.write(false);
-			fence;
-			// Test CTS
-			//while (cts.read) {
-			//}
+			waitData: while (bufferReady_n.read) {
+			// Wait for a data (Buffer is empty)
+			}
 			
+			readBuffer.write(true);
+			// Read the buffer once.
+			readData: readBuffer.write(false);
+			data = din.read;
+			fence; // Needed to split reading the data and waiting for the tick
+
 			// start bit
 			prescalerTx.tick.read;
 			start: tx.write(0);
-			
+
 			//prescalerTx.tick.read;
-			
-			saveData: for (i = 0; i < 8; i++) {// write data (LSB)
+			saveData: for (i = 0; i < 8; i++) { // write data (LSB)
 				prescalerTx.tick.read;
 				tx.write(data[0]);
 				data >>= 1;
@@ -102,7 +103,6 @@ network UartTx {
 			// stop bit
 			stop: tx.write(true);
 			prescalerTx.tick.read;
-			dataReady.write(true);
 		}
 	};
 
