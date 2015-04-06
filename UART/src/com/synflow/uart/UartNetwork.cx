@@ -16,28 +16,26 @@ network UartNetwork {
 	out bool tx;
 	
     // Receive Data
-    in bool rdUart;
-    out bool dataReceived_n, sync char dataUart;
+    out sync ready char dataUart;
     
     //Send Data
-    in sync char dataToSend;
-    out bool readyToSend_n;
+    in sync ready char dataToSend;
 
 	// Connect everything
 	uartRx = new UartRx();
 	uartRx.reads(rx);
     
     bufferRx = new std.fifo.SynchronousFIFO({depth: 32, width: 8});
-    bufferRx.reads(uartRx.dout, rdUart);
+    bufferRx.reads(uartRx.dout);
     
     bufferTx = new std.fifo.SynchronousFIFO({depth: 32, width: 8});
-    bufferTx.reads(dataToSend, uartTx.readBuffer);
+    bufferTx.reads(dataToSend);
 
 	uartTx = new UartTx();
-	uartTx.reads(bufferTx.empty, bufferTx.dout);
+	uartTx.reads(bufferTx.dout);
 	
 
-	this.reads(uartTx.tx, bufferRx.empty, bufferRx.dout, bufferTx.full);
+	this.reads(uartTx.tx, bufferRx.dout);
 
 
 }

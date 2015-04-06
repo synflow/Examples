@@ -9,7 +9,7 @@ network UartTest {
 	import com.synflow.uart.UartNetwork;
 
 	source = new task {
-		out bool txD, cts;
+		out bool txD;
 
 		const u11 DIVISOR = 25 * 1000 * 1000 / 115200;
 		u512 stimulus =
@@ -18,7 +18,7 @@ network UartTest {
 		u6 j;
 
 		void loop() {
-			IDLE: cts.write(0);
+			IDLE: 
 			txD.write(1);
 			waitDivisor();
 
@@ -54,17 +54,7 @@ network UartTest {
 	uartNetwork = new UartNetwork();
 	uartNetwork.reads(source.txD);
 
-	dummyRx = new task {
-		void loop() {
-			while (uartNetwork.dataReceived_n.read) {
-			// Wait for a data
 
-			}
-			uartNetwork.rdUart.write(true);
-			uartNetwork.rdUart.write(false);
-			uartNetwork.dataUart.read();
-		}
-	};
 
 
 	dummyTx = new task {
@@ -73,9 +63,6 @@ network UartTest {
 		0x1835_0000_0000_1234_0000_0000_0000_0000_0000_0000_5678_0000_0000_0000_0000_ABCD_0000_0000_0000_0000_0000_0000_EFAA_0000_0000_0000_0000_0000_0000_0000_8063_6261;
 
 		void loop() {
-			while (uartNetwork.readyToSend_n.read) {
-			// Buffer is full
-			}
 			uartNetwork.dataToSend.write((u8) (stimulus << 504));
 			stimulus >>= 8;
 		}

@@ -8,7 +8,7 @@ import com.synflow.uart.UartImp.*;
 
 network UartRx {
 	in bool rx;
-	out sync char dout;
+	out sync ready char dout;
 
 	prescaler = new task {
 	/**
