@@ -25,10 +25,10 @@ network UartNetwork {
 	uartRx = new UartRx();
 	uartRx.reads(rx);
     
-    bufferRx = new std.fifo.SynchronousFIFO({depth: 32, width: 8});
+    bufferRx = new std.fifo.SynchronousFIFO({size: 32, width: 8});
     bufferRx.reads(uartRx.dout);
     
-    bufferTx = new std.fifo.SynchronousFIFO({depth: 32, width: 8});
+    bufferTx = new std.fifo.SynchronousFIFO({size: 32, width: 8});
     bufferTx.reads(dataToSend);
 
 	uartTx = new UartTx();
