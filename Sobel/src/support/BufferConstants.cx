@@ -5,12 +5,11 @@
 package support;
 
 bundle BufferConstants {
-	
+
 	uint PIXEL_SIZE = 8;
 	typedef unsigned int<PIXEL_SIZE> pix_t;
 
-	uint LINE_WIDTH = 9;
-	typedef uint<LINE_WIDTH> col_t;
-	const uint<LINE_WIDTH> NUM_PIXELS_PER_LINE = 512 /* 1 << LINE_WIDTH */;
+	uint LINE_WIDTH = 512;
+	typedef uint<sizeof(LINE_WIDTH - 1)> col_t;
 
 }
