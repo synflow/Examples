@@ -7,18 +7,14 @@ package sobel;
 task SobelKernel {
 	import support.BufferConstants.*;
 
-	in pix_t p00, p01, p02,
-	p10, p11, p12,
-	p20, p21, p22;
+	in pix_t
+		p00, p01, p02,
+		p10, p11, p12,
+		p20, p21, p22;
 
 	out pix_t res;
 
 	void loop() {
-		pix_t
-			p00 = p00.read(), p01 = p01.read(), p02 = p02.read(),
-			p10 = p10.read(), /*    p11.read */ p12 = p12.read(),
-			p20 = p20.read(), p21 = p21.read(), p22 = p22.read();
-			
 		print("got values: ");
 		print(p00, " ", p01, " ", p02);
 		print(p10, " ", 0, " ", p12);
