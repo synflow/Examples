@@ -84,7 +84,7 @@ static void execute_stimulus(struct Stimulus *stimulus) {
 	}
 
 	stimulus->pixels_next = luminance;
-	stimulus->pixels_send_next = 1;
+	stimulus->pixels_valid_next = 1;
 
 	// update position
 	offset += fmt->BytesPerPixel;
