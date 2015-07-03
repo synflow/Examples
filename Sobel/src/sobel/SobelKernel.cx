@@ -15,24 +15,24 @@ task SobelKernel {
 	out pix_t res;
 
 	void loop() {
-		print("got values: ");
-		print(p00, " ", p01, " ", p02);
-		print(p10, " ", 0, " ", p12);
-		print(p20, " ", p21, " ", p22);
+		//print("got values: ");
+		//print(p00, " ", p01, " ", p02);
+		//print(p10, " ", 0, " ", p12);
+		//print(p20, " ", p21, " ", p22);
 
 		i15 Gx =
 			-p00     + p02
 			-2 * p10 + 2 * p12
 			-p20     + p22;
 		i15 Gy =
-			 p00 + 2 * p01 + p02
-			-p20 - 2 * p21 - p22;
+			 (i8)p00 + 2 * (i8)p01 + (i8)p02
+			-(i8)p20 - 2 * (i8)p21 - (i8)p22;
 
 		res.write((pix_t) (abs(Gx) + abs(Gy)));
 	}
 
-	const int abs(int x) {
-		return (int) (x < 0 ? -x : x);
+	const uint abs(int x) {
+		return (uint) (x < 0 ? 0-x : x);
 	}
 
 }
