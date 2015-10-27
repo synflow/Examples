@@ -61,9 +61,9 @@ network UartTest {
 
 		u512 stimulus =
 		0x1835_0000_0000_1234_0000_0000_0000_0000_0000_0000_5678_0000_0000_0000_0000_ABCD_0000_0000_0000_0000_0000_0000_EFAA_0000_0000_0000_0000_0000_0000_0000_8063_6261;
-
+		
 		void loop() {
-			uartNetwork.dataToSend.write((u8) (stimulus << 504));
+			uartNetwork.dataToSend.write((char) stimulus);
 			stimulus >>= 8;
 		}
 	};
