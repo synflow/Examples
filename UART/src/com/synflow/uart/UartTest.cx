@@ -55,7 +55,11 @@ network UartTest {
 	uartNetwork.reads(source.txD);
 
 
-
+	dummyTest = new task {
+		void loop() {
+		 char dummy = uartNetwork.dataUart.read;
+		}
+	};
 
 	dummyTx = new task {
 
