@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, Synflow SAS
+ * Copyright (c) 2013-2015, Synflow SAS
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,9 @@ network TopCounter {
   import arith.counter.Counter;
   import arith.counter.Clip;
   import arith.counter.Compare;
+	import arith.counter.Digit;
+  // input & output ports
+  out bool result, u15 segments;
 
   // Instantiations
   counter = new Counter();
@@ -41,4 +44,10 @@ network TopCounter {
   compare = new Compare();
   compare.reads(clip.dout);
   compare.reads(counter.count);
+
+  digit = new Digit();
+  digit.reads(counter.count);
+  
+  // Connecting the port of this network (TopCounter) to the output port result of the task compare  
+  this.reads(compare.result, digit.digits);
 }

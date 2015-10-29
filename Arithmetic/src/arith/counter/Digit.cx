@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014, Synflow SAS
+ * Copyright (c) 2013-2015, Synflow SAS
  * All rights reserved.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -42,24 +42,24 @@ task Digit {
 	in count_t count; out u15 digits;
 
 	void loop() {
-		count_t count = count.read;
-		u15 digits;
-		if (count < 100) {
-			digits = 0x01FF;
-		} else if (count < 200) {
-			digits = 0x4FFF;
-		} else if (count < 300) {
-			digits = 0x13DD;
-		} else if (count < 400) {
-			digits = 0x07DD;
-		} else if (count < 500) {
-			digits = 0x4DDD;
-		} else if (count < 511) {
-			digits = 0x25DD;
+		count_t cnt = count.read;
+		u15 dig;
+		if (cnt < 100) {
+			dig = 0x01FF;
+		} else if (cnt < 200) {
+			dig = 0x4FFF;
+		} else if (cnt < 300) {
+			dig = 0x13DD;
+		} else if (cnt < 400) {
+			dig = 0x07DD;
+		} else if (cnt < 500) {
+			dig = 0x4DDD;
+		} else if (cnt < 511) {
+			dig = 0x25DD;
 		} else {
-			digits = 0x7EAB;
+			dig = 0x7EAB;
 		}
-		digits.write(digits);
+		digits.write(dig);
 	}
 
 }
