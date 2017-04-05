@@ -57,6 +57,7 @@ network UartTest {
 
 	dummyTest = new task {
 		void loop() {
+			// A simple test
 		 char dummy = uartNetwork.dataUart.read;
 		}
 	};
