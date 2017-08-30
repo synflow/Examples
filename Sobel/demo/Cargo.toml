@@ -1,0 +1,6 @@
+[package]
+name = "sobel"
+version = "0.1.0"
+authors = ["Matthieu Wipliez <matthieu.wipliez@synflow.com>"]
+
+[dependencies]
